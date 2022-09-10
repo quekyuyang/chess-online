@@ -9,44 +9,20 @@ class MoveManager {
     this.chesspieces1 = chessboard.chesspieces1;
     this.chesspieces2 = chessboard.chesspieces2;
     this.graveyard = chessboard.graveyard;
-    this.pins1 = [];
-    this.pins2 = [];
-    this.movesets = {};
-  }
-
-  update_moves() {
-    if (this.player_turn == 1)
-      this.movesets = get_valid_moves(this.chesspieces1, this.chessboard.chessboard, this.pins1);
-    else
-      this.movesets = get_valid_moves(this.chesspieces2, this.chessboard.chessboard, this.pins2);
-  }
-
-  next_turn() {
-    this.player_turn = this.player_turn % 2 + 1; // Alternate between 1 and 2
-
-    let chesspieces = this.player_turn == 1 ? this.chesspieces1 : this.chesspieces2;
-    for (let chesspiece of chesspieces) {
-      if (chesspiece.vulnerable_to_enpassant)
-        chesspiece.vulnerable_to_enpassant = false;
-    }
-
-    let king = chesspieces.find(chesspiece => chesspiece.move_type == "king");
-    let [threats, pins] = find_king_threats(king, this.chessboard.chessboard);
-
-    this.update_moves();
   }
 
   compute_moves(player_turn) {
     return get_valid_moves(this.chessboard.chessboard, player_turn);
   }
 
-  get_moves() {
-    return this.movesets;
-  }
-
   move_piece(id, pos, player_turn) {
+    for (let chesspiece of this.chessboard.chessboard.flat()) {
+      if (chesspiece && chesspiece.vulnerable_to_enpassant && chesspiece.player == player_turn)
+        chesspiece.vulnerable_to_enpassant = false;
+    }
+
     let movesets = this.compute_moves(player_turn);
-    //var chesspiece = this.chessboard.chessboard.find(chesspiece => chesspiece.id == id);
+
     var chesspiece = this.chessboard.chessboard.flat().find(function (chesspiece) {
       if (chesspiece && chesspiece.id == id)
         return true;
@@ -64,13 +40,6 @@ class MoveManager {
     }
     else
       return false;
-  }
-
-  is_movable(id) {
-    if (this.player_turn == 1)
-      return this.chesspieces1.some(chesspiece => chesspiece.img_elem.id == id);
-    else
-      return this.chesspieces2.some(chesspiece => chesspiece.img_elem.id == id);
   }
 }
 
