@@ -1,7 +1,7 @@
 function createPickupEvent(elem, moves, renderer) {
   function move(event) {
-    elem.style.left = event.pageX;
-    elem.style.top = event.pageY;
+    elem.style.left = `${event.pageX}px`;
+    elem.style.top = `${event.pageY}px`;
   }
 
   function drop(event) {
@@ -40,12 +40,11 @@ function createPickupEvent(elem, moves, renderer) {
   return function pickup(event) {
     if (moves[this.id]) {
       let bound_rect = this.getBoundingClientRect();
-
-      this.style.width = bound_rect.width;
-      this.style.height = bound_rect.height;
+      this.style.width = `${bound_rect.width}px`;
+      this.style.height = `${bound_rect.height}px`;
       this.style.position = "absolute";
-      this.style.left = event.pageX;
-      this.style.top = event.pageY;
+      this.style.left = `${event.pageX}px`;
+      this.style.top = `${event.pageY}px`;
       this.style.zIndex = 100; // image must be on top for drop event to work
 
       renderer.show_moves(this.id);
