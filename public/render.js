@@ -18,7 +18,7 @@ class Renderer {
       // if a chess piece is on square, render it there and store it's moves
       if (chessboard[i]) {
         const chesspiece = chessboard[i];
-        let img_elem = document.querySelector("#" + chesspiece.id);
+        let img_elem = document.getElementById(chesspiece.id);
         squares[i].append(img_elem);
         this.chesspieces_moves[chesspiece.id] = moves[chesspiece.id];
       }
