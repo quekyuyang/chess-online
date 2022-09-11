@@ -3,93 +3,75 @@ var Vector = require("./Position.js");
 
 
 class Chessboard {
-  constructor() {
+  constructor(chesspieces1_data, chesspieces2_data, graveyard_data) {
     this.chessboard = create_chessboard_array();
-    this.piece_count = init_piece_count();
-    this.chesspieces1 = [];
-    this.chesspieces2 = [];
-    this.graveyard = [];
 
-    this.add_rook(1, new Vector(0, 7));
-    this.add_rook(1, new Vector(7, 7));
-    this.add_knight(1, new Vector(1, 7));
-    this.add_knight(1, new Vector(6, 7));
-    this.add_bishop(1, new Vector(2, 7));
-    this.add_bishop(1, new Vector(5, 7));
-    this.add_queen(1, new Vector(3, 7));
-    this.add_king(1, new Vector(4, 7));
+    if (chesspieces1_data === undefined) {
+      this.chesspieces1 = [];
+      this.chesspieces2 = [];
+      this.graveyard = [];
 
-    this.add_rook(2, new Vector(0, 0));
-    this.add_rook(2, new Vector(7, 0));
-    this.add_knight(2, new Vector(1, 0));
-    this.add_knight(2, new Vector(6, 0));
-    this.add_bishop(2, new Vector(2, 0));
-    this.add_bishop(2, new Vector(5, 0));
-    this.add_queen(2, new Vector(3, 0));
-    this.add_king(2, new Vector(4, 0));
+      this.add_piece(1, new Vector(0, 7), 'rook', this.count_pieces());
+      this.add_piece(1, new Vector(7, 7), 'rook', this.count_pieces());
+      this.add_piece(1, new Vector(1, 7), 'knight', this.count_pieces());
+      this.add_piece(1, new Vector(6, 7), 'knight', this.count_pieces());
+      this.add_piece(1, new Vector(2, 7), 'bishop', this.count_pieces());
+      this.add_piece(1, new Vector(5, 7), 'bishop', this.count_pieces());
+      this.add_piece(1, new Vector(3, 7), 'queen', this.count_pieces());
+      this.add_piece(1, new Vector(4, 7), 'king', this.count_pieces());
 
-    this.add_pawns();
+      this.add_piece(2, new Vector(0, 0), 'rook', this.count_pieces());
+      this.add_piece(2, new Vector(7, 0), 'rook', this.count_pieces());
+      this.add_piece(2, new Vector(1, 0), 'knight', this.count_pieces());
+      this.add_piece(2, new Vector(6, 0), 'knight', this.count_pieces());
+      this.add_piece(2, new Vector(2, 0), 'bishop', this.count_pieces());
+      this.add_piece(2, new Vector(5, 0), 'bishop', this.count_pieces());
+      this.add_piece(2, new Vector(3, 0), 'queen', this.count_pieces());
+      this.add_piece(2, new Vector(4, 0), 'king', this.count_pieces());
+
+      this.add_pawns();
+    }
+    else {
+      this.chesspieces1 = [];
+      this.chesspieces2 = [];
+      this.graveyard = [];
+
+      for (const data of chesspieces1_data) {
+        this.add_piece(data.player, data._pos, data.move_type, data.id);
+      }
+
+      for (const data of chesspieces2_data) {
+        this.add_piece(data.player, data._pos, data.move_type, data.id);
+      }
+
+      for (const data of graveyard_data) {
+        this.add_piece_to_graveyard(data.player, data._pos, data.move_type, data.id);
+      }
+    }
   }
 
-  add_rook(player, pos) {
-    if (player == 1)
-      this.add_piece(player, pos, Rook, "w_rook");
-    else
-      this.add_piece(player, pos, Rook, "b_rook");
-  }
-
-  add_bishop(player, pos) {
-    if (player == 1)
-      this.add_piece(player, pos, Bishop, "w_bishop");
-    else
-      this.add_piece(player, pos, Bishop, "b_bishop");
-  }
-
-  add_queen(player, pos) {
-    if (player == 1)
-      this.add_piece(player, pos, Queen, "w_queen");
-    else
-      this.add_piece(player, pos, Queen, "b_queen");
-  }
-
-  add_knight(player, pos) {
-    if (player == 1)
-      this.add_piece(player, pos, Knight, "w_knight");
-    else
-      this.add_piece(player, pos, Knight, "b_knight");
-  }
-
-  add_pawn(player, pos) {
-    if (player == 1)
-      this.add_piece(player, pos, Pawn, "w_pawn");
-    else
-      this.add_piece(player, pos, Pawn, "b_pawn");
-  }
-
-  add_king(player, pos) {
-    if (player == 1)
-      this.add_piece(player, pos, King, "w_king");
-    else
-      this.add_piece(player, pos, King, "b_king");
-  }
-
-  add_piece(player, pos, Type, id_base) {
-    let id = id_base + this.piece_count[id_base];
-    this.piece_count[id_base] += 1;
-    var chesspiece = new Type(player, pos.y, pos.x, id);
-
+  add_piece(player, pos, type, id) {
+    const chesspiece = create_piece(player, pos, type, id);
     if (player == 1)
       this.chesspieces1.push(chesspiece);
     else
       this.chesspieces2.push(chesspiece);
-
     this.chessboard[pos.y][pos.x] = chesspiece;
+  }
+
+  add_piece_to_graveyard(player, pos, type, id) {
+    const chesspiece = create_piece(player, pos, type, id);
+    this.graveyard.push(chesspiece);
+  }
+
+  count_pieces() {
+    return (this.chesspieces1.length + this.chesspieces2.length + this.graveyard.length).toString();
   }
 
   add_pawns() {
     for (let i = 0; i < 8; i++) {
-      this.add_pawn(1, new Vector(i, 6));
-      this.add_pawn(2, new Vector(i, 1));
+      this.add_piece(1, new Vector(i, 6), 'pawn', this.count_pieces());
+      this.add_piece(2, new Vector(i, 1), 'pawn', this.count_pieces());
     }
   }
 
@@ -129,21 +111,21 @@ function create_chessboard_array() {
 }
 
 
-function init_piece_count() {
-  return {
-    "w_rook": 0,
-    "w_bishop": 0,
-    "w_queen": 0,
-    "w_king": 0,
-    "w_knight": 0,
-    "w_pawn": 0,
-    "b_rook": 0,
-    "b_bishop": 0,
-    "b_queen": 0,
-    "b_king": 0,
-    "b_knight": 0,
-    "b_pawn": 0
-  };
+function create_piece(player, pos, type, id) {
+  switch (type) {
+    case 'rook':
+      return new Rook(player, pos.y, pos.x, id)
+    case 'bishop':
+      return new Bishop(player, pos.y, pos.x, id)
+    case 'queen':
+      return new Queen(player, pos.y, pos.x, id)
+    case 'knight':
+      return new Knight(player, pos.y, pos.x, id)
+    case 'pawn':
+      return new Pawn(player, pos.y, pos.x, id)
+    case 'king':
+      return new King(player, pos.y, pos.x, id)
+  }
 }
 
 
