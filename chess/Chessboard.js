@@ -71,10 +71,11 @@ class Chessboard {
     }
   }
 
-  move_piece(chesspiece, move) {
+  move_piece(y, x, move) {
     if (move.capture)
       this.capture_piece(move.capture);
-    this.chessboard[chesspiece.pos.y][chesspiece.pos.x] = null;
+    const chesspiece = this.chessboard[y][x];
+    this.chessboard[y][x] = null;
     this.chessboard[move.pos.y][move.pos.x] = chesspiece;
     chesspiece.pos = move.pos;
   }

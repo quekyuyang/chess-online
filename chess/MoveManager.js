@@ -35,7 +35,7 @@ class MoveManager {
 
     const move = movesets[id].find(move => move.pos.equals(pos));
     if (move) {
-      this.chessboard.move_piece(chesspiece, move);
+      this.chessboard.move_piece(chesspiece.pos.y, chesspiece.pos.x, move);
       return true;
     }
     else
