@@ -5,37 +5,11 @@ var Vector = require("./Position.js");
 class Chessboard {
   constructor(chesspieces1_data, chesspieces2_data, graveyard_data) {
     this.chessboard = create_chessboard_array();
+    this.chesspieces1 = [];
+    this.chesspieces2 = [];
+    this.graveyard = [];
 
-    if (chesspieces1_data === undefined) {
-      this.chesspieces1 = [];
-      this.chesspieces2 = [];
-      this.graveyard = [];
-
-      this.add_piece(1, new Vector(0, 7), 'rook');
-      this.add_piece(1, new Vector(7, 7), 'rook');
-      this.add_piece(1, new Vector(1, 7), 'knight');
-      this.add_piece(1, new Vector(6, 7), 'knight');
-      this.add_piece(1, new Vector(2, 7), 'bishop');
-      this.add_piece(1, new Vector(5, 7), 'bishop');
-      this.add_piece(1, new Vector(3, 7), 'queen');
-      this.add_piece(1, new Vector(4, 7), 'king');
-
-      this.add_piece(2, new Vector(0, 0), 'rook');
-      this.add_piece(2, new Vector(7, 0), 'rook');
-      this.add_piece(2, new Vector(1, 0), 'knight');
-      this.add_piece(2, new Vector(6, 0), 'knight');
-      this.add_piece(2, new Vector(2, 0), 'bishop');
-      this.add_piece(2, new Vector(5, 0), 'bishop');
-      this.add_piece(2, new Vector(3, 0), 'queen');
-      this.add_piece(2, new Vector(4, 0), 'king');
-
-      this.add_pawns();
-    }
-    else {
-      this.chesspieces1 = [];
-      this.chesspieces2 = [];
-      this.graveyard = [];
-
+    if (chesspieces1_data) {
       for (const data of chesspieces1_data) {
         this.add_piece(data.player, data._pos, data.move_type, data.id);
       }
@@ -48,6 +22,28 @@ class Chessboard {
         this.add_piece_to_graveyard(data.player, data._pos, data.move_type, data.id);
       }
     }
+  }
+
+  init() {
+    this.add_piece(1, new Vector(0, 7), 'rook');
+    this.add_piece(1, new Vector(7, 7), 'rook');
+    this.add_piece(1, new Vector(1, 7), 'knight');
+    this.add_piece(1, new Vector(6, 7), 'knight');
+    this.add_piece(1, new Vector(2, 7), 'bishop');
+    this.add_piece(1, new Vector(5, 7), 'bishop');
+    this.add_piece(1, new Vector(3, 7), 'queen');
+    this.add_piece(1, new Vector(4, 7), 'king');
+
+    this.add_piece(2, new Vector(0, 0), 'rook');
+    this.add_piece(2, new Vector(7, 0), 'rook');
+    this.add_piece(2, new Vector(1, 0), 'knight');
+    this.add_piece(2, new Vector(6, 0), 'knight');
+    this.add_piece(2, new Vector(2, 0), 'bishop');
+    this.add_piece(2, new Vector(5, 0), 'bishop');
+    this.add_piece(2, new Vector(3, 0), 'queen');
+    this.add_piece(2, new Vector(4, 0), 'king');
+
+    this.add_pawns();
   }
 
   add_piece(player, pos, type) {

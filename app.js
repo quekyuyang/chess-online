@@ -33,6 +33,7 @@ app.use(function (req, res, next) {
     const database = client.db('chess-online');
     const matches = database.collection('matches');
     const chessboard = new Chessboard();
+    chessboard.init();
     const match_id = ObjectId();
     pending_match_ids.add(match_id.toString());
 
