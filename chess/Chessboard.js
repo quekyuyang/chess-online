@@ -11,23 +11,23 @@ class Chessboard {
       this.chesspieces2 = [];
       this.graveyard = [];
 
-      this.add_piece(1, new Vector(0, 7), 'rook', this.count_pieces());
-      this.add_piece(1, new Vector(7, 7), 'rook', this.count_pieces());
-      this.add_piece(1, new Vector(1, 7), 'knight', this.count_pieces());
-      this.add_piece(1, new Vector(6, 7), 'knight', this.count_pieces());
-      this.add_piece(1, new Vector(2, 7), 'bishop', this.count_pieces());
-      this.add_piece(1, new Vector(5, 7), 'bishop', this.count_pieces());
-      this.add_piece(1, new Vector(3, 7), 'queen', this.count_pieces());
-      this.add_piece(1, new Vector(4, 7), 'king', this.count_pieces());
+      this.add_piece(1, new Vector(0, 7), 'rook');
+      this.add_piece(1, new Vector(7, 7), 'rook');
+      this.add_piece(1, new Vector(1, 7), 'knight');
+      this.add_piece(1, new Vector(6, 7), 'knight');
+      this.add_piece(1, new Vector(2, 7), 'bishop');
+      this.add_piece(1, new Vector(5, 7), 'bishop');
+      this.add_piece(1, new Vector(3, 7), 'queen');
+      this.add_piece(1, new Vector(4, 7), 'king');
 
-      this.add_piece(2, new Vector(0, 0), 'rook', this.count_pieces());
-      this.add_piece(2, new Vector(7, 0), 'rook', this.count_pieces());
-      this.add_piece(2, new Vector(1, 0), 'knight', this.count_pieces());
-      this.add_piece(2, new Vector(6, 0), 'knight', this.count_pieces());
-      this.add_piece(2, new Vector(2, 0), 'bishop', this.count_pieces());
-      this.add_piece(2, new Vector(5, 0), 'bishop', this.count_pieces());
-      this.add_piece(2, new Vector(3, 0), 'queen', this.count_pieces());
-      this.add_piece(2, new Vector(4, 0), 'king', this.count_pieces());
+      this.add_piece(2, new Vector(0, 0), 'rook');
+      this.add_piece(2, new Vector(7, 0), 'rook');
+      this.add_piece(2, new Vector(1, 0), 'knight');
+      this.add_piece(2, new Vector(6, 0), 'knight');
+      this.add_piece(2, new Vector(2, 0), 'bishop');
+      this.add_piece(2, new Vector(5, 0), 'bishop');
+      this.add_piece(2, new Vector(3, 0), 'queen');
+      this.add_piece(2, new Vector(4, 0), 'king');
 
       this.add_pawns();
     }
@@ -50,8 +50,8 @@ class Chessboard {
     }
   }
 
-  add_piece(player, pos, type, id) {
-    const chesspiece = create_piece(player, pos, type, id);
+  add_piece(player, pos, type) {
+    const chesspiece = create_piece(player, pos, type, this.count_pieces());
     if (player == 1)
       this.chesspieces1.push(chesspiece);
     else
