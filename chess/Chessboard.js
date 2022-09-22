@@ -46,8 +46,8 @@ class Chessboard {
     this.add_pawns();
   }
 
-  add_piece(player, pos, type) {
-    const chesspiece = create_piece(player, pos, type, this.count_pieces());
+  add_piece(player, pos, type, id) {
+    const chesspiece = create_piece(player, pos, type, id ? id : this.count_pieces());
     if (player == 1)
       this.chesspieces1.push(chesspiece);
     else
