@@ -1,3 +1,5 @@
+let current_player_moves = {};
+
 function createPickupEvent(elem, moves, renderer) {
   function move(event) {
     elem.style.left = `${event.pageX}px`;
@@ -26,10 +28,10 @@ function createPickupEvent(elem, moves, renderer) {
         })
         .then((response) => response.json())
         .then(function (data) {
-          for (let id in moves) {
-            delete moves[id];
+          for (let id in current_player_moves) {
+            delete current_player_moves[id];
           }
-          Object.assign(moves, data.moves);
+          Object.assign(current_player_moves, data.moves);
           renderer.update(data.chessboard, data.graveyard, data.moves);
         });
         break;
@@ -37,8 +39,10 @@ function createPickupEvent(elem, moves, renderer) {
     }
   }
 
+  current_player_moves = moves;
+
   return function pickup(event) {
-    if (moves[this.id]) {
+    if (current_player_moves[this.id]) {
       let bound_rect = this.getBoundingClientRect();
       this.style.width = `${bound_rect.width}px`;
       this.style.height = `${bound_rect.height}px`;
