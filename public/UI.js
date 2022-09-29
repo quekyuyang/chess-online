@@ -32,7 +32,7 @@ function createPickupEvent(elem, moves, renderer) {
             delete current_player_moves[id];
           }
           Object.assign(current_player_moves, data.moves);
-          renderer.update(data.chessboard, data.graveyard, data.moves);
+          renderer.update(data.chessboard, data.graveyard);
         });
         break;
       }
@@ -51,7 +51,7 @@ function createPickupEvent(elem, moves, renderer) {
       this.style.top = `${event.pageY}px`;
       this.style.zIndex = 100; // image must be on top for drop event to work
 
-      renderer.show_moves(this.id);
+      renderer.show_moves(current_player_moves[this.id]);
 
       let chessboard = document.querySelector(".chessboard");
       chessboard.addEventListener("mousemove", move);
