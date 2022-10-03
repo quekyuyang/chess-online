@@ -20,15 +20,7 @@ function createPickupEvent(elem, moves) {
     let elements_at_pos = document.elementsFromPoint(event.pageX, event.pageY);
     for (let element of elements_at_pos) {
       if (element.classList.contains("square")) {
-        fetch('http://127.0.0.1:3000/move_piece', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            id: this.id,
-            x: parseInt(element.dataset.col),
-            y: parseInt(element.dataset.row)
-          })
-        })
+        send_move_to_server(this.id, element.dataset.col, element.dataset.row)
         .then((response) => response.json())
         .then(function (data) {
           for (let id in current_player_moves) {
@@ -61,6 +53,19 @@ function createPickupEvent(elem, moves) {
       this.addEventListener("mouseup", drop);
     }
   };
+}
+
+
+function send_move_to_server(id, x, y) {
+  return fetch('http://127.0.0.1:3000/move_piece', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      id: id,
+      x: x,
+      y: y
+    })
+  });
 }
 
 
