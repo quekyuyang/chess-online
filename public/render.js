@@ -1,9 +1,12 @@
-let divs_chessboard = Array.from(document.querySelectorAll("div.square"));
-let div_array_to_fill = [];
-for (let i = 0; i < 8; i++) {
-  div_array_to_fill.push(divs_chessboard.slice(i*8, i*8+8));
+const div_array = [];
+
+function init() {
+  let divs_chessboard = Array.from(document.querySelectorAll("div.square"));
+  for (let i = 0; i < 8; i++) {
+    div_array.push(divs_chessboard.slice(i*8, i*8+8));
+  }
 }
-const div_array = div_array_to_fill;
+
 
 function update(chessboard, graveyard) {
   // for (let chesspiece of graveyard) {
@@ -37,4 +40,4 @@ function clear_moves() {
 }
 
 
-export { update, show_moves, clear_moves };
+export { init, update, show_moves, clear_moves };

@@ -1,9 +1,9 @@
-import {update, show_moves, clear_moves} from "./render.js"
+import {init, update, show_moves, clear_moves} from "./render.js"
 
 
 let current_player_moves = {};
 
-function createPickupEvent(elem, moves) {
+function createPickupEvent(elem, moves, chessboard_elem) {
   function move(event) {
     elem.style.left = `${event.pageX}px`;
     elem.style.top = `${event.pageY}px`;
@@ -48,8 +48,7 @@ function createPickupEvent(elem, moves) {
 
       show_moves(current_player_moves[this.id]);
 
-      let chessboard = document.querySelector(".chessboard");
-      chessboard.addEventListener("mousemove", move);
+      chessboard_elem.addEventListener("mousemove", move);
       this.addEventListener("mouseup", drop);
     }
   };

@@ -1,5 +1,5 @@
 import {createPickupEvent} from "./UI.js"
-import {update} from "./render.js"
+import {init, update} from "./render.js"
 
 function create_piece_sprite(img_path, id) {
   let sprite = new Image();
@@ -31,7 +31,8 @@ function main() {
         let img_path = get_img_path(chesspiece.move_type, chesspiece.player);
         let sprite = create_piece_sprite(img_path, chesspiece.id);
         squares[i].append(sprite);
-        let pickup = createPickupEvent(sprite, data.moves);
+        init();
+        let pickup = createPickupEvent(sprite, data.moves, document.querySelector(".chessboard"));
         sprite.addEventListener("mousedown", pickup);
       }
     }
