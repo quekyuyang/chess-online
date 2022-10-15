@@ -1,4 +1,9 @@
-function createPickupEvent(elem, moves, renderer) {
+import {init, update, show_moves, clear_moves} from "./render.js"
+
+
+let current_player_moves = {};
+
+function createPickupEvent(elem, moves, chessboard_elem) {
   function move(event) {
     elem.style.left = `${event.pageX}px`;
     elem.style.top = `${event.pageY}px`;
@@ -7,7 +12,7 @@ function createPickupEvent(elem, moves, renderer) {
   function drop(event) {
     document.querySelector(".chessboard").removeEventListener("mousemove", move);
     this.removeEventListener("mouseup", drop);
-    renderer.clear_moves();
+    clear_moves();
     this.style.position = "relative";
     this.style.left = "50%";
     this.style.top = "50%";
@@ -15,30 +20,24 @@ function createPickupEvent(elem, moves, renderer) {
     let elements_at_pos = document.elementsFromPoint(event.pageX, event.pageY);
     for (let element of elements_at_pos) {
       if (element.classList.contains("square")) {
-        fetch('http://127.0.0.1:3000/move_piece', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            id: this.id,
-            x: parseInt(element.dataset.col),
-            y: parseInt(element.dataset.row)
-          })
-        })
+        send_move_to_server(this.id, element.dataset.col, element.dataset.row)
         .then((response) => response.json())
         .then(function (data) {
-          for (let id in moves) {
-            delete moves[id];
+          for (let id in current_player_moves) {
+            delete current_player_moves[id];
           }
-          Object.assign(moves, data.moves);
-          renderer.update(data.chessboard, data.graveyard, data.moves);
+          Object.assign(current_player_moves, data.moves);
+          update(data.chessboard, data.graveyard);
         });
         break;
       }
     }
   }
 
+  current_player_moves = moves;
+
   return function pickup(event) {
-    if (moves[this.id]) {
+    if (current_player_moves[this.id]) {
       let bound_rect = this.getBoundingClientRect();
       this.style.width = `${bound_rect.width}px`;
       this.style.height = `${bound_rect.height}px`;
@@ -47,74 +46,26 @@ function createPickupEvent(elem, moves, renderer) {
       this.style.top = `${event.pageY}px`;
       this.style.zIndex = 100; // image must be on top for drop event to work
 
-      renderer.show_moves(this.id);
+      show_moves(current_player_moves[this.id]);
 
-      let chessboard = document.querySelector(".chessboard");
-      chessboard.addEventListener("mousemove", move);
+      chessboard_elem.addEventListener("mousemove", move);
       this.addEventListener("mouseup", drop);
     }
   };
 }
 
-function addPickupEvent(elem, moves, renderer) {
-  elem.addEventListener("mousedown", pickup);
 
-  function pickup(event) {
-    if (moves[this.id]) {
-      let bound_rect = this.getBoundingClientRect();
-
-      this.style.width = bound_rect.width;
-      this.style.height = bound_rect.height;
-      this.style.position = "absolute";
-      this.style.left = event.pageX;
-      this.style.top = event.pageY;
-      this.style.zIndex = 100; // image must be on top for drop event to work
-
-      renderer.show_moves(this.id);
-
-      let chessboard = document.querySelector(".chessboard");
-      chessboard.addEventListener("mousemove", move);
-      this.addEventListener("mouseup", drop);
-    }
-  }
-
-  function move(event) {
-    elem.style.left = event.pageX;
-    elem.style.top = event.pageY;
-  }
-
-  function drop(event) {
-    document.querySelector(".chessboard").removeEventListener("mousemove", move);
-    this.removeEventListener("mouseup", drop);
-    renderer.clear_moves();
-    this.style.position = "relative";
-    this.style.left = "50%";
-    this.style.top = "50%";
-    this.style.zIndex = 0;
-    let elements_at_pos = document.elementsFromPoint(event.pageX, event.pageY);
-    for (let element of elements_at_pos) {
-      if (element.classList.contains("square")) {
-        fetch('http://127.0.0.1:3000/move_piece', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            id: this.id,
-            x: parseInt(element.dataset.col),
-            y: parseInt(element.dataset.row)
-          })
-        })
-        .then((response) => response.json())
-        .then(function (data) {
-          console.log(data);
-          let pickup = createPickupEvent(elem, data.moves, renderer);
-          elem.addEventListener("mousedown", pickup);
-          renderer.update(data.chessboard, data.graveyard, data.moves);
-        });
-        break;
-      }
-    }
-  }
+function send_move_to_server(id, x, y) {
+  return fetch('http://127.0.0.1:3000/move_piece', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      id: id,
+      x: x,
+      y: y
+    })
+  });
 }
 
 
-export { addPickupEvent, createPickupEvent };
+export { createPickupEvent };
