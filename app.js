@@ -3,20 +3,9 @@ require('dotenv').config()
 var express = require('express');
 var session = require('express-session');
 var path = require('path');
-const { MongoClient, ObjectId } = require("mongodb");
-var Chessboard = require('./chess/Chessboard.js');
-var MoveManager = require('./chess/MoveManager.js');
-var Vector = require('./chess/Position.js');
-var { Rook, Bishop, Queen, Knight, Pawn, King } = require("./chess/ChessPiece.js");
+var {new_match, find_match, move_piece} = require("./database.js")
 
 var app = express();
-
-const uri = `mongodb+srv://user1:${process.env.MONGOOSE_PASS}@cluster0.sloa7os.mongodb.net/?retryWrites=true&w=majority`;
-const client = new MongoClient(uri);
-client.connect(function (client) {
-
-});
-
 app.use(express.static('public'));
 app.use(express.json());
 
@@ -30,22 +19,7 @@ pending_match_ids = new Set();
 
 app.use(function (req, res, next) {
   if (!req.session.match_id) {
-    const database = client.db('chess-online');
-    const matches = database.collection('matches');
-    const chessboard = new Chessboard();
-    chessboard.init();
-    const match_id = ObjectId();
-    pending_match_ids.add(match_id.toString());
-
-    matches.insertOne({
-      _id: match_id,
-      chesspieces1: chessboard.chesspieces1,
-      chesspieces2: chessboard.chesspieces2,
-      graveyard: chessboard.graveyard,
-      player_turn: 1
-    }, function (err, result) {
-      pending_match_ids.delete(match_id.toString());
-    });
+    const match_id = new_match(pending_match_ids);
     req.session.match_id = match_id.toString();
   }
 
@@ -57,20 +31,10 @@ app.get('/', function (req, res, next) {
 })
 
 function respond_match_data(match_id, res) {
-  const database = client.db('chess-online');
-  const matches = database.collection('matches');
-
-  matches.findOne(
-    {_id: ObjectId(match_id)},
-    function(err, result) {
-      const chessboard = new Chessboard(result.chesspieces1, result.chesspieces2, result.graveyard);
-      let move_manager = new MoveManager(chessboard);
-      res.json({
-        chessboard: chessboard.chessboard,
-        graveyard: chessboard.graveyard,
-        moves: move_manager.compute_moves(result.player_turn)
-      });
-    });
+  find_match(match_id)
+  .then(function (match) {
+    res.json(match)
+  })
 }
 
 app.get('/valid_moves', function (req, res, next) {
@@ -88,25 +52,9 @@ app.get('/valid_moves', function (req, res, next) {
 });
 
 app.post('/move_piece', function (req, res, next) {
-  const database = client.db('chess-online');
-  const matches = database.collection('matches');
-  matches.findOne({_id: ObjectId(req.session.match_id)}, function(err, result) {
-    const chessboard = new Chessboard(result.chesspieces1, result.chesspieces2, result.graveyard);
-    let move_manager = new MoveManager(chessboard);
-    const success = move_manager.move_piece(req.body.id, new Vector(req.body.x, req.body.y), result.player_turn);
-
-    const next_player_turn = result.player_turn % 2 + 1;
-    if (success) {
-      const update = {$set: {
-        chesspieces1: chessboard.chesspieces1,
-        chesspieces2: chessboard.chesspieces2,
-        player_turn: next_player_turn
-      }};
-      matches.updateOne({_id: ObjectId(req.session.match_id)}, update);
-    }
-
-    const movesets = move_manager.compute_moves(next_player_turn);
-    res.json({chessboard: chessboard.chessboard, graveyard: chessboard.graveyard, moves: movesets});
+  move_piece(req.session.match_id, req.body)
+  .then(function(state) {
+    res.json(state)
   });
 });
 
