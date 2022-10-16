@@ -1,18 +1,15 @@
 var Chessboard = require('./chess/Chessboard.js')
 var MoveManager = require('./chess/MoveManager.js');
 var Vector = require('./chess/Position.js');
-const { MongoClient, ObjectId } = require("mongodb")
+const { ObjectId } = require("mongodb")
+const get_matches_mongodb = require("./mongodb.js")
 
 
 class DatabaseInterface {
   constructor() {
-    const client = new MongoClient(
+    this.matches = get_matches_mongodb(
       `mongodb+srv://user1:${process.env.MONGOOSE_PASS}\
-@cluster0.sloa7os.mongodb.net/?retryWrites=true&w=majority`
-    )
-    client.connect(function (client) {})
-    const database = client.db('chess-online')
-    this.matches = database.collection('matches')
+@cluster0.sloa7os.mongodb.net/?retryWrites=true&w=majority`)
     this.pending_match_ids = new Set()
   }
 
