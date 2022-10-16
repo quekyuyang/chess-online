@@ -3,7 +3,7 @@ require('dotenv').config()
 var express = require('express');
 var session = require('express-session');
 var path = require('path');
-var {new_match, find_match, move_piece} = require("./database.js")
+const DatabaseInterface = require("./DatabaseInterface.js")
 
 var app = express();
 app.use(express.static('public'));
@@ -15,11 +15,11 @@ app.use(session({
   saveUninitialized: false
 }));
 
-pending_match_ids = new Set();
+database_interface = new DatabaseInterface();
 
 app.use(function (req, res, next) {
   if (!req.session.match_id) {
-    const match_id = new_match(pending_match_ids);
+    const match_id = database_interface.new_match();
     req.session.match_id = match_id.toString();
   }
 
@@ -30,29 +30,13 @@ app.get('/', function (req, res, next) {
   res.sendFile(path.join(__dirname, 'chess.html'));
 })
 
-function respond_match_data(match_id, res) {
-  find_match(match_id)
-  .then(function (match) {
-    res.json(match)
-  })
-}
-
 app.get('/valid_moves', function (req, res, next) {
-  if (pending_match_ids.has(req.session.match_id)) {
-    const interval_id = setInterval(function() {
-      if (!pending_match_ids.has(req.session.match_id)) {
-        respond_match_data(req.session.match_id, res);
-        clearInterval(interval_id);
-      }
-    }, 1000);
-  }
-  else {
-    respond_match_data(req.session.match_id, res);
-  }
+  database_interface.find_match(req.session.match_id)
+  .then(match => {res.json(match);});
 });
 
 app.post('/move_piece', function (req, res, next) {
-  move_piece(req.session.match_id, req.body)
+  database_interface.move_piece(req.session.match_id, req.body)
   .then(function(state) {
     res.json(state)
   });
