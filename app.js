@@ -32,7 +32,11 @@ app.get('/', function (req, res, next) {
 
 app.get('/valid_moves', function (req, res, next) {
   database_interface.find_match(req.session.match_id)
-  .then(match => {res.json(match);});
+  .then(match => {res.json(match);})
+  .catch(error => {
+    console.log(error);
+    res.sendStatus(500);
+  });
 });
 
 app.post('/move_piece', function (req, res, next) {

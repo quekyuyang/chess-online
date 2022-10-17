@@ -35,27 +35,31 @@ class DatabaseInterface {
   find_match(id) {
     return new Promise((resolve, reject) => {
       if (this.pending_match_ids.has(id)) {
-        let attempts = 0
-        const interval_id = setInterval(() => {
-          if (!this.pending_match_ids.has(id)) {
-            clearInterval(interval_id)
-            this._find_match_database(id)
-            .then(match => {resolve(match)})
-          }
-          else {
-            attempts++
-            if (attempts > 2) {
-              clearInterval(interval_id)
-              reject('Pending match insertion timeout')
-            }
-          }
-        }, 500)
+        this.wait_pending_match(id, resolve, reject)
       }
       else {
         this._find_match_database(id)
         .then(match => {resolve(match)})
       }
     })
+  }
+
+  wait_pending_match(id, resolve, reject) {
+    let attempts = 0
+    const interval_id = setInterval(() => {
+      if (!this.pending_match_ids.has(id)) {
+        clearInterval(interval_id)
+        this._find_match_database(id)
+        .then(match => {resolve(match)})
+      }
+      else {
+        attempts++
+        if (attempts > 2) {
+          clearInterval(interval_id)
+          reject('Pending match insertion timeout')
+        }
+      }
+    }, 500)
   }
 
   _find_match_database(id) {
