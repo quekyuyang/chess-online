@@ -82,21 +82,25 @@ class DatabaseInterface {
       let move_manager = new MoveManager(chessboard);
       const success = move_manager.move_piece(move.id, new Vector(move.x, move.y), result.player_turn);
 
-      const next_player_turn = result.player_turn % 2 + 1;
       if (success) {
+        const next_player_turn = result.player_turn % 2 + 1;
         const update = {$set: {
           chesspieces1: chessboard.chesspieces1,
           chesspieces2: chessboard.chesspieces2,
           player_turn: next_player_turn
         }};
         this.matches.updateOne({_id: ObjectId(match_id)}, update);
-      }
 
-      const movesets = move_manager.compute_moves(next_player_turn);
-      return {
-        chessboard: chessboard.chessboard,
-        graveyard: chessboard.graveyard,
-        moves: movesets
+        const movesets = move_manager.compute_moves(next_player_turn);
+        return {
+          success: true,
+          chessboard: chessboard.chessboard,
+          graveyard: chessboard.graveyard,
+          moves: movesets
+        }
+      }
+      else {
+        return {success: false}
       }
     });
   }

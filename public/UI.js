@@ -23,11 +23,13 @@ function createPickupEvent(elem, moves, chessboard_elem) {
         send_move_to_server(this.id, element.dataset.col, element.dataset.row)
         .then((response) => response.json())
         .then(function (data) {
-          for (let id in current_player_moves) {
-            delete current_player_moves[id];
+          if (data.success) {
+            for (let id in current_player_moves) {
+              delete current_player_moves[id];
+            }
+            Object.assign(current_player_moves, data.moves);
+            update(data.chessboard, data.graveyard);
           }
-          Object.assign(current_player_moves, data.moves);
-          update(data.chessboard, data.graveyard);
         });
         break;
       }
