@@ -19,6 +19,16 @@ function get_img_path(type, player_n) {
 }
 
 
+function wait_for_update() {
+  return fetch('http://127.0.0.1:3000/match_state')
+  .then((response) => response.json())
+  .then((state) => {
+    update(state.chessboard, state.graveyard);
+    wait_for_update();
+  });
+}
+
+
 function main() {
   fetch('http://127.0.0.1:3000/valid_moves')
   .then((response) => response.json())
@@ -38,6 +48,8 @@ function main() {
       }
     }
     update(data.chessboard, data.graveyard);
+
+    wait_for_update();
   });
 }
 
