@@ -23,6 +23,7 @@ function main() {
   fetch('http://127.0.0.1:3000/valid_moves')
   .then((response) => response.json())
   .then(function (data) {
+    init();
     const chessboard = data.chessboard.flat();
     let squares = document.querySelectorAll("div.chessboard div");
     for (let i = 0; i < chessboard.length; i++) {
@@ -31,7 +32,7 @@ function main() {
         let img_path = get_img_path(chesspiece.move_type, chesspiece.player);
         let sprite = create_piece_sprite(img_path, chesspiece.id);
         squares[i].append(sprite);
-        init();
+
         let pickup = createPickupEvent(sprite, data.moves, document.querySelector(".chessboard"));
         sprite.addEventListener("mousedown", pickup);
       }
