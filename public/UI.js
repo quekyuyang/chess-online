@@ -58,7 +58,7 @@ function createPickupEvent(elem, moves, chessboard_elem) {
 
 
 function send_move_to_server(id, x, y) {
-  return fetch('http://127.0.0.1:3000/move_piece', {
+  return fetch('http://127.0.0.1:3000/game/move_piece', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({

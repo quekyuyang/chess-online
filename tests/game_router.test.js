@@ -2,7 +2,7 @@ require('dotenv').config()
 const DatabaseInterface = require("../DatabaseInterface.js")
 jest.mock("../DatabaseInterface.js")
 
-const {index, update_opponent} = require("../index");
+const {game_router, update_opponent} = require("../game_router");
 const request = require("supertest");
 const express = require("express");
 var session = require('express-session');
@@ -18,7 +18,8 @@ app.get('*', (req, res, next) => {
   req.session.match_id = 'match_id'
   next()
 })
-app.use("/", index);
+
+app.use("/", game_router);
 
 test("Get match state", done => {
   request(app)
