@@ -30,7 +30,8 @@ function wait_for_update() {
 
 
 function main() {
-  fetch('http://127.0.0.1:3000/valid_moves')
+  fetch('http://127.0.0.1:3000/new_match')
+  .then(() => fetch('http://127.0.0.1:3000/valid_moves'))
   .then((response) => response.json())
   .then(function (data) {
     init();

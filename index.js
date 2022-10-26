@@ -2,26 +2,19 @@ const express = require('express')
 var path = require('path');
 const index = express.Router();
 const DatabaseInterface = require("./DatabaseInterface.js");
+const queue_match = require("./helper.js");
 
 
 const database_interface = new DatabaseInterface();
 let waiting = null;
 
-index.get('/', function (req, res, next) {
-  if (!req.session.match_id) {
-    let match_id;
-    if (waiting === null) {
-      match_id = database_interface.new_match();
-      waiting = match_id;
-    }
-    else {
-      match_id = waiting;
-      waiting = null;
-    }
-    req.session.match_id = match_id.toString();
-  }
+index.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'chess.html'));
-})
+});
+
+index.get('/new_match', (req, res) => {
+  queue_match(req, res, database_interface);
+});
 
 index.get('/valid_moves', function (req, res, next) {
   database_interface.find_match(req.session.match_id)
