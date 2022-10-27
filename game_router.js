@@ -20,7 +20,7 @@ game_router.get('/valid_moves', function (req, res, next) {
 
 game_router.post('/move_piece', function (req, res, next) {
   const database_interface = req.app.get('database_interface');
-  database_interface.move_piece(req.session.match_id, req.body)
+  database_interface.move_piece(req.session.match_id, req.session.id, req.body)
   .then(function(state) {
     res.json(state);
     if (state.success)

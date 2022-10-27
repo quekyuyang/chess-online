@@ -13,7 +13,7 @@ class DatabaseInterface {
     this.pending_match_ids = new Set()
   }
 
-  new_match() {
+  new_match(player1, player2) {
     const chessboard = new Chessboard()
     chessboard.init()
     const match_id = ObjectId()
@@ -24,6 +24,7 @@ class DatabaseInterface {
       chesspieces1: chessboard.chesspieces1,
       chesspieces2: chessboard.chesspieces2,
       graveyard: chessboard.graveyard,
+      player_ids: [player1, player2],
       player_turn: 1
     }, (err, result) => {
       this.pending_match_ids.delete(match_id.toString())
@@ -75,9 +76,12 @@ class DatabaseInterface {
     })
   }
 
-  move_piece(match_id, move) {
+  move_piece(match_id, player_id, move) {
     return this.matches.findOne({_id: ObjectId(match_id)})
     .then(result => {
+      if (player_id != result.player_ids[result.player_turn-1])
+        return {success:false}
+
       const chessboard = new Chessboard(result.chesspieces1, result.chesspieces2, result.graveyard);
       let move_manager = new MoveManager(chessboard);
       const success = move_manager.move_piece(move.id, new Vector(move.x, move.y), result.player_turn);

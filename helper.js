@@ -6,7 +6,9 @@ function queue_match(req, res, database_interface) {
     waiting = {req: req, res: res};
   }
   else {
-    const match_id = database_interface.new_match();
+    const match_id = database_interface.new_match(
+      waiting.req.session.id, req.session.id
+    );
     req.session.match_id = match_id.toString();
     waiting.req.session.match_id = match_id.toString();
     res.json({opponent: waiting.req.session.id});

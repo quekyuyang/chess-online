@@ -3,7 +3,7 @@ const queue_match = require("../helper.js")
 test("Test matchmaking", () => {
   const fake_database_interface = {}
   const match_id = 'match_id'
-  fake_database_interface.new_match = () => match_id
+  fake_database_interface.new_match = jest.fn(() => match_id)
 
   const req1 = {
     session: {
@@ -26,6 +26,9 @@ test("Test matchmaking", () => {
   queue_match(req1, res1, fake_database_interface)
   queue_match(req2, res2, fake_database_interface)
 
+  expect(fake_database_interface.new_match.mock.calls.length).toBe(1)
+  expect(fake_database_interface.new_match.mock.calls[0][0]).toBe(req1.session.id)
+  expect(fake_database_interface.new_match.mock.calls[0][1]).toBe(req2.session.id)
   expect(req1.session.match_id).toBe(match_id)
   expect(req2.session.match_id).toBe(match_id)
   expect(res1.json.mock.calls.length).toBe(1)
