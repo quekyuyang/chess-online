@@ -71,7 +71,8 @@ class DatabaseInterface {
       return {
         chessboard: chessboard.chessboard,
         graveyard: chessboard.graveyard,
-        moves: move_manager.compute_moves(result.player_turn)
+        moves: move_manager.compute_moves(result.player_turn),
+        player_ids: result.player_ids
       }
     })
   }

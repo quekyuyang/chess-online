@@ -3,7 +3,7 @@ import {init, update, show_moves, clear_moves} from "./render.js"
 
 let current_player_moves = {};
 
-function createPickupEvent(elem, moves, chessboard_elem) {
+function createPickupEvent(elem, moves, chessboard_elem, enable_move, disable_move) {
   function move(event) {
     elem.style.left = `${event.pageX}px`;
     elem.style.top = `${event.pageY}px`;
@@ -29,6 +29,8 @@ function createPickupEvent(elem, moves, chessboard_elem) {
             }
             Object.assign(current_player_moves, data.moves);
             update(data.chessboard, data.graveyard);
+            disable_move();
+            wait_for_update(enable_move);
           }
         });
         break;
@@ -70,4 +72,14 @@ function send_move_to_server(id, x, y) {
 }
 
 
-export { createPickupEvent };
+function wait_for_update(enable_move) {
+  return fetch('http://127.0.0.1:3000/game/match_state')
+  .then((response) => response.json())
+  .then((state) => {
+    update(state.chessboard, state.graveyard);
+    enable_move(state.moves);
+  });
+}
+
+
+export { createPickupEvent, wait_for_update };
