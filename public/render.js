@@ -39,11 +39,11 @@ function create_piece_sprite(img_path, id) {
 
 
 function update(chessboard, graveyard) {
-  // for (let chesspiece of graveyard) {
-  //   let img_elem = document.querySelector("#"+chesspiece.id);
-  //   img_elem.style.position = "absolute";
-  //   img_elem.style.left = -1000;
-  // }
+  for (const chesspiece of graveyard) {
+    let img_elem = document.getElementById(chesspiece.id);
+    img_elem.style.position = "absolute";
+    img_elem.style.left = -1000;
+  }
 
   chessboard = chessboard.flat();
   let squares = document.querySelectorAll("div.chessboard div");
