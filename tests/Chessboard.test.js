@@ -62,3 +62,32 @@ test('Move chess piece on chessboard', () => {
   expect(chessboard.chessboard[7][3]).toBeInstanceOf(Rook);
   expect(chessboard.chessboard[7][3]).toHaveProperty('player', 1);
 });
+
+test('Capture chess piece by moving to captive position', () => {
+  const chessboard = new Chessboard();
+  chessboard.add_piece(1, {x: 3, y: 4}, 'rook');
+  chessboard.add_piece(2, {x: 3, y: 0}, 'rook');
+  const capturer = chessboard.chessboard[4][3];
+  const captive = chessboard.chessboard[0][3];
+
+  chessboard.move_piece(4, 3, {pos: {y: 0, x: 3}, capture: captive});
+
+  expect(chessboard.chessboard[4][3]).toBeNull();
+  expect(chessboard.chessboard[0][3]).toBe(capturer);
+  expect(chessboard.graveyard[0]).toBe(captive);
+});
+
+test('Capture chess piece without moving to captive position (en passant)', () => {
+  const chessboard = new Chessboard();
+  chessboard.add_piece(1, {x: 4, y: 3}, 'pawn');
+  chessboard.add_piece(2, {x: 3, y: 3}, 'pawn');
+  const capturer = chessboard.chessboard[3][4];
+  const captive = chessboard.chessboard[3][3];
+
+  chessboard.move_piece(3, 4, {pos: {x: 4, y: 2}, capture: captive});
+
+  expect(chessboard.chessboard[3][4]).toBeNull();
+  expect(chessboard.chessboard[2][4]).toBe(capturer);
+  expect(chessboard.chessboard[3][3]).toBeNull();
+  expect(chessboard.graveyard[0]).toBe(captive);
+});
