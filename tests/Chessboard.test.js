@@ -27,12 +27,14 @@ test('Standard chessboard initialization', () => {
 test('Initialize chessboard from data object', () => {
   const chesspieces1_data = [
     {player: 1, _pos: {x: 3, y: 4}, move_type: 'rook', id: '1'},
-    {player: 1, _pos: {x: 5, y: 4}, move_type: 'knight', id: '2'}
+    {player: 1, _pos: {x: 5, y: 4}, move_type: 'knight', id: '2'},
+    {player: 1, _pos: {x: 3, y: 3}, move_type: 'pawn', id: '7', has_moved: true}
   ]
 
   const chesspieces2_data = [
     {player: 2, _pos: {x: 3, y: 6}, move_type: 'rook', id: '3'},
-    {player: 2, _pos: {x: 5, y: 6}, move_type: 'knight', id: '4'}
+    {player: 2, _pos: {x: 5, y: 6}, move_type: 'knight', id: '4'},
+    {player: 2, _pos: {x: 0, y: 1}, move_type: 'pawn', id: '8', has_moved: false}
   ]
 
   const graveyard_data = [
@@ -48,14 +50,14 @@ test('Initialize chessboard from data object', () => {
 
 test('Add chess piece to chessboard', () => {
   const chessboard = new Chessboard();
-  chessboard.add_piece(1, {x: 3, y: 4}, 'rook');
+  chessboard.add_rook(1, {x: 3, y: 4})
   expect(chessboard.chessboard[4][3]).toBeInstanceOf(Rook);
   expect(chessboard.chessboard[4][3]).toHaveProperty('player', 1);
 });
 
 test('Move chess piece on chessboard', () => {
   const chessboard = new Chessboard();
-  chessboard.add_piece(1, {x: 3, y: 4}, 'rook');
+  chessboard.add_rook(1, {x: 3, y: 4})
   chessboard.move_piece(4, 3, {pos: {y: 7, x: 3}});
 
   expect(chessboard.chessboard[4][3]).toBeNull();
@@ -65,8 +67,8 @@ test('Move chess piece on chessboard', () => {
 
 test('Capture chess piece by moving to captive position', () => {
   const chessboard = new Chessboard();
-  chessboard.add_piece(1, {x: 3, y: 4}, 'rook');
-  chessboard.add_piece(2, {x: 3, y: 0}, 'rook');
+  chessboard.add_rook(1, {x: 3, y: 4})
+  chessboard.add_rook(2, {x: 3, y: 0})
   const capturer = chessboard.chessboard[4][3];
   const captive = chessboard.chessboard[0][3];
 
@@ -79,8 +81,8 @@ test('Capture chess piece by moving to captive position', () => {
 
 test('Capture chess piece without moving to captive position (en passant)', () => {
   const chessboard = new Chessboard();
-  chessboard.add_piece(1, {x: 4, y: 3}, 'pawn');
-  chessboard.add_piece(2, {x: 3, y: 3}, 'pawn');
+  chessboard.add_pawn(1, {x: 4, y: 3})
+  chessboard.add_pawn(2, {x: 3, y: 3})
   const capturer = chessboard.chessboard[3][4];
   const captive = chessboard.chessboard[3][3];
 
