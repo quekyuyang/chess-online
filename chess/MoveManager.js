@@ -14,14 +14,13 @@ class MoveManager {
   }
 
   move_piece(id, pos, player_turn) {
-    for (let chesspiece of this.chessboard.chessboard.flat()) {
-      if (chesspiece && chesspiece.vulnerable_to_enpassant && chesspiece.player == player_turn)
-        chesspiece.vulnerable_to_enpassant = false;
-    }
+    const chesspieces = player_turn == 1 ? this.chessboard.chesspieces1 :
+                                           this.chessboard.chesspieces2
+    this.check_for_enpassant(chesspieces, player_turn);
 
     let movesets = this.compute_moves(player_turn);
 
-    var chesspiece = this.chessboard.chessboard.flat().find(function (chesspiece) {
+    var chesspiece = chesspieces.find(function (chesspiece) {
       if (chesspiece && chesspiece.id == id)
         return true;
       else {
@@ -38,6 +37,13 @@ class MoveManager {
     }
     else
       return false;
+  }
+
+  check_for_enpassant(chesspieces, player_turn) {
+    for (let chesspiece of chesspieces) {
+      if (chesspiece && chesspiece.vulnerable_to_enpassant && chesspiece.player == player_turn)
+        chesspiece.vulnerable_to_enpassant = false;
+    }
   }
 }
 
