@@ -51,11 +51,12 @@ class Knight extends ChessPiece {
 
 
 class Pawn extends ChessPiece {
-  constructor(player_n, y, x, id, has_moved) {
+  constructor(player_n, y, x, id, has_moved, vulnerable_to_enpassant) {
     super(player_n, y, x, id);
     this.move_type = "pawn";
     this.has_moved = has_moved;
-    this.vulnerable_to_enpassant = false;
+    this.vulnerable_to_enpassant = vulnerable_to_enpassant !== undefined ?
+                                   vulnerable_to_enpassant : false;
   }
 
   get pos() {

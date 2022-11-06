@@ -28,13 +28,13 @@ test('Initialize chessboard from data object', () => {
   const chesspieces1_data = [
     {player: 1, _pos: {x: 3, y: 4}, move_type: 'rook', id: '1'},
     {player: 1, _pos: {x: 5, y: 4}, move_type: 'knight', id: '2'},
-    {player: 1, _pos: {x: 3, y: 3}, move_type: 'pawn', id: '7', has_moved: true}
+    {player: 1, _pos: {x: 3, y: 3}, move_type: 'pawn', id: '7', has_moved: true, vulnerable_to_enpassant: true}
   ]
 
   const chesspieces2_data = [
     {player: 2, _pos: {x: 3, y: 6}, move_type: 'rook', id: '3'},
     {player: 2, _pos: {x: 5, y: 6}, move_type: 'knight', id: '4'},
-    {player: 2, _pos: {x: 0, y: 1}, move_type: 'pawn', id: '8', has_moved: false}
+    {player: 2, _pos: {x: 0, y: 1}, move_type: 'pawn', id: '8', has_moved: false, vulnerable_to_enpassant: false}
   ]
 
   const graveyard_data = [

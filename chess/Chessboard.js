@@ -80,8 +80,8 @@ class Chessboard {
     this.add_piece(king)
   }
 
-  add_pawn(player, pos, id, has_moved) {
-    const pawn = new Pawn(player, pos.y, pos.x, id ? id : this.count_pieces(), has_moved)
+  add_pawn(player, pos, id, has_moved, vulnerable_to_enpassant) {
+    const pawn = new Pawn(player, pos.y, pos.x, id ? id : this.count_pieces(), has_moved, vulnerable_to_enpassant)
     this.add_piece(pawn)
   }
 
@@ -103,7 +103,7 @@ class Chessboard {
         this.add_king(data.player, data._pos, data.id)
         break
       case 'pawn':
-        this.add_pawn(data.player, data._pos, data.id, data.has_moved)
+        this.add_pawn(data.player, data._pos, data.id, data.has_moved, data.vulnerable_to_enpassant)
         break
     }
   }
