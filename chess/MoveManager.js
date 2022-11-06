@@ -7,9 +7,6 @@ class MoveManager {
   constructor(chessboard) {
     this.chessboard = chessboard;
     this.player_turn = 2; // Start with 2 because next_turn will be called for first turn
-    this.chesspieces1 = chessboard.chesspieces1;
-    this.chesspieces2 = chessboard.chesspieces2;
-    this.graveyard = chessboard.graveyard;
   }
 
   compute_moves(player_turn) {
