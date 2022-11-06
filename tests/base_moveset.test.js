@@ -355,6 +355,22 @@ test('Pawn can capture enemies diagonally forward', () => {
   expect(movesets['0']).toEqual(expect.arrayContaining(expected_moveset))
 })
 
+test('Pawn can en passant', () => {
+  addToChessboard('pawn', 3, 5, 1)
+  addToChessboard('pawn', 3, 4, 2)
+  chessboard[3][4].vulnerable_to_enpassant = true
+  chessboard[3][5].has_moved = true
+
+  const movesets = generate_base_movesets(chessboard, 1)
+  const expected_moveset = [
+    {pos: {y: 2, x: 5}, capture: null},
+    {pos: {y: 2, x: 4}, capture: chessboard[3][4]}
+  ]
+
+  expect(movesets['0'].length).toBe(expected_moveset.length)
+  expect(movesets['0']).toEqual(expect.arrayContaining(expected_moveset))
+})
+
 test('King moveset', () => {
   const y = 7
   const x = 3
