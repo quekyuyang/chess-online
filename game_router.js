@@ -8,19 +8,6 @@ game_router.all('*', (req, res, next) => {
   }
 });
 
-game_router.get('/valid_moves', function (req, res, next) {
-  const database_interface = req.app.get('database_interface');
-  database_interface.find_match(req.session.match_id)
-  .then(match => {
-    match.first_move = req.session.id == match.player_ids[0];
-    res.json(match);
-  })
-  .catch(error => {
-    console.log(error);
-    res.sendStatus(500);
-  });
-});
-
 game_router.post('/move_piece', function (req, res, next) {
   const database_interface = req.app.get('database_interface');
   database_interface.move_piece(req.session.match_id, req.session.id, req.body)
