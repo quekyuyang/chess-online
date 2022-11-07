@@ -1,10 +1,10 @@
 import {init, update} from "./render.js"
 import {SpriteManager} from "./SpriteManager.js"
-import {send_move_to_server, get_match_state} from "./server_comms.js"
+import {get_match_data, send_move_to_server, get_match_state} from "./server_comms.js"
 
 
 class Game {
-  async init(get_match_data) {
+  async init() {
     await get_match_data()
     .then((data) => {
       const sprites = init(data.chessboard.flat());

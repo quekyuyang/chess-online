@@ -1,15 +1,18 @@
 import {Game} from "../public/Game.js"
 import {init, update} from "../public/render.js"
 import {SpriteManager} from "../public/SpriteManager.js"
-import {send_move_to_server, get_match_state} from "../public/server_comms.js"
+import {get_match_data, send_move_to_server, get_match_state} from "../public/server_comms.js"
 
 
 jest.mock("../public/render.js")
 jest.mock("../public/SpriteManager.js")
+jest.mock("../public/server_comms.js")
+
 
 beforeEach(() => {
   SpriteManager.mockClear()
 })
+
 
 test("Start game with first move", async () => {
   const match_state = {
@@ -18,16 +21,15 @@ test("Start game with first move", async () => {
     first_move: true,
     moves: "moves"
   }
+  get_match_data.mockResolvedValue(match_state)
   const game = new Game()
-  await game.init(() => Promise.resolve(match_state))
+  await game.init()
 
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls.length).toBe(1)
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls[0][0])
   .toBe(match_state.moves)
 })
 
-
-jest.mock("../public/server_comms.js")
 
 test("Start game without first move", async () => {
   const new_match_state = {
@@ -42,8 +44,9 @@ test("Start game without first move", async () => {
     graveyard: null,
     first_move: false,
   }
+  get_match_data.mockResolvedValue(init_match_state)
   const game = new Game()
-  await game.init(() => Promise.resolve(init_match_state))
+  await game.init()
 
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls.length).toBe(1)
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls[0][0])
@@ -58,8 +61,9 @@ test("Move piece then wait for opponent", async () => {
     first_move: true,
     moves: "moves1"
   }
+  get_match_data.mockResolvedValue(match_state1)
   const game = new Game()
-  await game.init(() => Promise.resolve(match_state1))
+  await game.init()
 
   const match_state2 = {
     chessboard: [],
