@@ -1,4 +1,5 @@
 const Vector = require('./Position.js');
+const {generatePosKnight} = require('./generatePosKnight')
 
 
 function generate_base_movesets(chessboard, player_turn) {
@@ -71,28 +72,15 @@ function generate_moveset_line(pos_start, vector_increment, chessboard) {
 
 function generate_moveset_knight(pos_start, chessboard) {
   let moveset = [];
-  let moves_pos_rel = [
-    new Vector(1, 2),
-    new Vector(-1, 2),
-    new Vector(1, -2),
-    new Vector(-1, -2),
-    new Vector(2, 1),
-    new Vector(2, -1),
-    new Vector(-2, 1),
-    new Vector(-2, -1),
-  ];
+  const pos_dests = generatePosKnight(pos_start, chessboard);
 
-  for (let pos_rel of moves_pos_rel) {
-    let pos_abs = Vector.sum(pos_start, pos_rel);
-    if (!is_within_chessboard(pos_abs))
-      continue;
-
+  for (let pos of pos_dests) {
     let chesspiece_moving = chessboard[pos_start.y][pos_start.x];
-    let chesspiece_dest = chessboard[pos_abs.y][pos_abs.x];
+    let chesspiece_dest = chessboard[pos.y][pos.x];
     if (!chesspiece_dest)
-      moveset.push({pos: pos_abs, capture: null});
+      moveset.push({pos: pos, capture: null});
     else if (chesspiece_dest.player != chesspiece_moving.player)
-      moveset.push({pos: pos_abs, capture: chesspiece_dest});
+      moveset.push({pos: pos, capture: chesspiece_dest});
   }
   return moveset;
 }
