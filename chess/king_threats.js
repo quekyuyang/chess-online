@@ -1,6 +1,8 @@
 var Vector = require('./Position.js');
+const {generatePosKnight} = require('./generatePosKnight');
 
 
+// Remove king in name? Don't necessarily apply only to king
 function find_king_threats(king, chessboard) {
   let threats = [];
   let pins = [];
@@ -159,18 +161,8 @@ function check_diagonal(king, vector_increment, chessboard) {
 
 
 function check_knight_threats(king, chessboard) {
-  const rel_pos = [
-    new Vector(1, 2),
-    new Vector(-1, 2),
-    new Vector(1, -2),
-    new Vector(-1, -2),
-    new Vector(2, 1),
-    new Vector(2, -1),
-    new Vector(-2, 1),
-    new Vector(-2, -1),
-  ];
-  const abs_pos = rel_pos.map(vec => Vector.sum(king.pos, vec))
-  const threats = abs_pos.map(pos => chessboard[pos.y][pos.x])
+  const pos = generatePosKnight(king.pos, chessboard)
+  const threats = pos.map(pos => chessboard[pos.y][pos.x])
                   .filter(chesspiece => chesspiece !== null)
                   .filter(chesspiece => chesspiece.move_type == 'knight')
                   .filter(chesspiece => chesspiece.player != king.player)
@@ -181,7 +173,11 @@ function check_knight_threats(king, chessboard) {
 function check_pawn_threats(king, chessboard) {
   const y_dir = king.player==1 ? -1 : 1
   const rel_pos = [new Vector(1, y_dir), new Vector(-1, y_dir)]
-  const abs_pos = rel_pos.map(vec => Vector.sum(king.pos, vec))
+  const abs_pos = rel_pos.map(vec => {
+    const pos = Vector.sum(king.pos, vec)
+    if (is_within_chessboard(pos))
+      return pos
+  })
   const threats = abs_pos.map(pos => chessboard[pos.y][pos.x])
                   .filter(chesspiece => chesspiece !== null)
                   .filter(chesspiece => chesspiece.move_type == 'pawn')
