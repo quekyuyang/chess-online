@@ -1,6 +1,6 @@
 var Vector = require('./Position.js');
 const generate_base_movesets = require('./base_moveset');
-var find_king_threats = require('./king_threats.js');
+const filterMoves = require('./filterMoves');
 
 
 class MoveManager {
@@ -10,7 +10,8 @@ class MoveManager {
   }
 
   compute_moves(player_turn) {
-    return generate_base_movesets(this.chessboard.chessboard, player_turn);
+    let moves = generate_base_movesets(this.chessboard.chessboard, player_turn);
+    return filterMoves(moves, this.chessboard, player_turn);
   }
 
   move_piece(id, pos, player_turn) {

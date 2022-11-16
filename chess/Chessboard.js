@@ -25,6 +25,10 @@ class Chessboard {
     }
   }
 
+  static clone(chessboard) {
+    return new Chessboard(chessboard.chesspieces1, chessboard.chesspieces2, chessboard.graveyard)
+  }
+
   init() {
     this.add_rook(1, new Vector(0, 7));
     this.add_rook(1, new Vector(7, 7));
@@ -142,6 +146,19 @@ class Chessboard {
       this.chesspieces2.splice(index, 1);
     }
     this.graveyard.push(captured);
+  }
+
+  get_king(player) {
+    const chesspieces = player == 1 ? this.chesspieces1 : this.chesspieces2
+    return chesspieces.find(chesspiece => chesspiece.move_type == 'king')
+  }
+
+  get_chesspiece(id) {
+    let chesspiece = this.chesspieces1.find(chesspiece => chesspiece.id == id)
+    if (chesspiece === undefined) {
+      chesspiece = this.chesspieces2.find(chesspiece => chesspiece.id == id)
+    }
+    return chesspiece
   }
 }
 
