@@ -14,6 +14,16 @@ class UserDatabase {
             password: password
         })
     }
+
+    authenticate(username, password) {
+        return this.users.findOne({username: username})
+        .then(result => {
+            if (result)
+                return password === result.password
+            else
+                return false
+        })
+    }
 }
 
 module.exports = UserDatabase

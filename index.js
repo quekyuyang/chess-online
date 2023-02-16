@@ -10,6 +10,17 @@ index.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+index.post('/login', (req, res) => {
+  const userDatabase = req.app.get('user_database');
+  userDatabase.authenticate(req.body.username, req.body.password)
+  .then((success) => {
+    if (success)
+      res.redirect('/play')
+    else
+      res.redirect('/')
+  })
+})
+
 index.get('/signup_form', (req, res) => {
   res.sendFile(path.join(__dirname, 'signup.html'));
 });
