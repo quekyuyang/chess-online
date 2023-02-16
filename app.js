@@ -4,12 +4,14 @@ var express = require('express');
 var session = require('express-session');
 const index = require('./index');
 const {game_router} = require('./game_router')
+const UserDatabase = require('./UserDatabase')
 const DatabaseInterface = require("./DatabaseInterface.js");
 
 
 var app = express();
 app.use(express.static('public'));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use(session({
   secret: process.env.SESSION_SECRET_KEY,
@@ -17,6 +19,8 @@ app.use(session({
   saveUninitialized: false
 }));
 
+const userDatabase = new UserDatabase();
+app.set('user_database', userDatabase);
 const database_interface = new DatabaseInterface();
 app.set('database_interface', database_interface);
 

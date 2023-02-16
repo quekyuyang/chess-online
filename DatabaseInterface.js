@@ -2,7 +2,7 @@ var Chessboard = require('./chess/Chessboard.js')
 var MoveManager = require('./chess/MoveManager.js');
 var Vector = require('./chess/Position.js');
 const { ObjectId } = require("mongodb")
-const get_matches_mongodb = require("./mongodb.js")
+const {get_matches_mongodb} = require("./mongodb.js")
 
 
 class DatabaseInterface {

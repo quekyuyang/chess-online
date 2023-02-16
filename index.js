@@ -7,6 +7,20 @@ const queue_match = require("./helper.js");
 let waiting = null;
 
 index.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+index.get('/signup_form', (req, res) => {
+  res.sendFile(path.join(__dirname, 'signup.html'));
+});
+
+index.post('/signup', (req, res) => {
+  const userDatabase = req.app.get('user_database');
+  userDatabase.newUser(req.body.username, req.body.password);
+  res.redirect('/');
+})
+
+index.get('/play', (req, res) => {
   res.sendFile(path.join(__dirname, 'chess.html'));
 });
 
