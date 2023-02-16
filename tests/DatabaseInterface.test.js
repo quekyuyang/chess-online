@@ -1,5 +1,5 @@
 const DatabaseInterface = require("../DatabaseInterface.js")
-const get_matches_mongodb = require("../mongodb.js")
+const {get_matches_mongodb} = require("../mongodb.js")
 
 
 jest.mock("../mongodb.js")
