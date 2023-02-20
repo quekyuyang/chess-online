@@ -11,7 +11,7 @@ class SpriteManager {
 
   enable_move(movesets) {
     for (const piece_id in movesets) {
-      let pickup = createPickupEvent(self.sprites[piece_id], movesets, document.querySelector(".chessboard"), self.move_piece_callback)
+      let pickup = createPickupEvent(self.sprites[piece_id], movesets, document.querySelector(".main"), self.move_piece_callback)
       self.sprites[piece_id].addEventListener("mousedown", pickup)
       self.events[piece_id] = pickup
     }

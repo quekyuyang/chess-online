@@ -3,14 +3,15 @@ import {init, update, show_moves, clear_moves} from "./render.js"
 
 let current_player_moves = {};
 
-function createPickupEvent(elem, moves, chessboard_elem, move_piece) {
+function createPickupEvent(elem, moves, containingElem, move_piece) {
   function move(event) {
-    elem.style.left = `${event.pageX}px`;
-    elem.style.top = `${event.pageY}px`;
+    const containingRect = containingElem.getBoundingClientRect();
+    elem.style.left = `${event.pageX - containingRect.left}px`;
+    elem.style.top = `${event.pageY - containingRect.top}px`;
   }
 
   function drop(event) {
-    document.querySelector(".chessboard").removeEventListener("mousemove", move);
+    containingElem.removeEventListener("mousemove", move);
     this.removeEventListener("mouseup", drop);
     clear_moves();
     this.style.position = "relative";
@@ -33,14 +34,16 @@ function createPickupEvent(elem, moves, chessboard_elem, move_piece) {
       let bound_rect = this.getBoundingClientRect();
       this.style.width = `${bound_rect.width}px`;
       this.style.height = `${bound_rect.height}px`;
+
       this.style.position = "absolute";
-      this.style.left = `${event.pageX}px`;
-      this.style.top = `${event.pageY}px`;
+      const containingRect = containingElem.getBoundingClientRect();
+      this.style.left = `${event.pageX - containingRect.left}px`;
+      this.style.top = `${event.pageY - containingRect.top}px`;
       this.style.zIndex = 100; // image must be on top for drop event to work
 
       show_moves(current_player_moves[this.id]);
 
-      chessboard_elem.addEventListener("mousemove", move);
+      containingElem.addEventListener("mousemove", move);
       this.addEventListener("mouseup", drop);
     }
   };
