@@ -1,4 +1,5 @@
 const Vector = require('./Position.js');
+const Move = require('./Move')
 const {generatePosKnight} = require('./generatePosKnight')
 
 
@@ -57,12 +58,12 @@ function generate_moveset_line(pos_start, vector_increment, chessboard) {
   let moveset = [];
   for (let pos = Vector.sum(pos_start, vector_increment); is_within_chessboard(pos); pos = Vector.sum(pos, vector_increment)) {
     if (!chessboard[pos.y][pos.x])
-      moveset.push({pos: new Vector(pos.x, pos.y), capture: null});
+      moveset.push(new Move(pos));
     else if (chessboard[pos_start.y][pos_start.x].player == chessboard[pos.y][pos.x].player) {
       break;
     }
     else {
-      moveset.push({pos: new Vector(pos.x, pos.y), capture: chessboard[pos.y][pos.x]});
+      moveset.push(new Move(pos, chessboard[pos.y][pos.x]))
       break;
     }
   }
@@ -78,9 +79,9 @@ function generate_moveset_knight(pos_start, chessboard) {
     let chesspiece_moving = chessboard[pos_start.y][pos_start.x];
     let chesspiece_dest = chessboard[pos.y][pos.x];
     if (!chesspiece_dest)
-      moveset.push({pos: pos, capture: null});
+      moveset.push(new Move(pos));
     else if (chesspiece_dest.player != chesspiece_moving.player)
-      moveset.push({pos: pos, capture: chesspiece_dest});
+      moveset.push(new Move(pos, chesspiece_dest));
   }
   return moveset;
 }
@@ -92,22 +93,22 @@ function generate_moveset_pawn(pos_start, chessboard) {
   let moveset = [];
   let pos_dest = Vector.sum(pos_start, new Vector(0, 1*dir));
   if (!chessboard[pos_dest.y][pos_dest.x]) {
-    moveset.push({pos: pos_dest, capture: null});
+    moveset.push(new Move(pos_dest));
 
     pos_dest = Vector.sum(pos_start, new Vector(0, 2*dir));
     if (!chesspiece_moving.has_moved && !chessboard[pos_dest.y][pos_dest.x])
-      moveset.push({pos: pos_dest, capture: null});
+      moveset.push(new Move(pos_dest));
   }
 
   pos_dest = Vector.sum(pos_start, new Vector(1, 1*dir));
   let chesspiece_dest = chessboard[pos_dest.y][pos_dest.x];
   if (chesspiece_dest && chesspiece_dest.player != chesspiece_moving.player)
-    moveset.push({pos: pos_dest, capture: chesspiece_dest});
+    moveset.push(new Move(pos_dest, chesspiece_dest));
 
   pos_dest = Vector.sum(pos_start, new Vector(-1, 1*dir));
   chesspiece_dest = chessboard[pos_dest.y][pos_dest.x];
   if (chesspiece_dest && chesspiece_dest.player != chesspiece_moving.player)
-    moveset.push({pos: pos_dest, capture: chesspiece_dest});
+    moveset.push(new Move(pos_dest, chesspiece_dest));
 
   moveset = moveset.concat(generate_enpassant(pos_start, chessboard));
   return moveset;
@@ -127,7 +128,7 @@ function generate_enpassant(pos_start, chessboard) {
     let chesspiece_target = chessboard[pos_target.y][pos_target.x];
     if (chesspiece_target && chesspiece_target.vulnerable_to_enpassant) {
       let pos_dest = Vector.sum(pos_target, new Vector(0, dir));
-      moveset.push({pos: pos_dest, capture: chesspiece_target});
+      moveset.push(new Move(pos_dest, chesspiece_target));
     }
   }
   return moveset;
@@ -153,9 +154,9 @@ function generate_moveset_king(pos_start, chessboard) {
   for (let pos_dest of pos_dests) {
     let chesspiece_dest = chessboard[pos_dest.y][pos_dest.x];
     if (!chesspiece_dest)
-      moveset.push({pos: pos_dest, capture: null});
+      moveset.push(new Move(pos_dest));
     else if (chesspiece_dest.player != chesspiece_moving.player)
-      moveset.push({pos: pos_dest, capture: chesspiece_dest});
+      moveset.push(new Move(pos_dest, chesspiece_dest));
   }
 
   return moveset;
