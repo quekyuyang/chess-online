@@ -1,4 +1,5 @@
 const {get_users_mongodb} = require("./mongodb")
+const bcrypt = require('bcryptjs')
 
 
 class UserDatabase {
@@ -9,19 +10,22 @@ class UserDatabase {
     }
 
     newUser(username, password) {
-        this.users.insertOne({
-            username: username,
-            password: password
+        bcrypt.hash(password, 10)
+        .then((hash) => {
+            return this.users.insertOne({
+                username: username,
+                password: hash
+            })
         })
     }
 
     authenticate(username, password) {
         return this.users.findOne({username: username})
-        .then(result => {
-            if (result)
-                return password === result.password
-            else
-                return false
+        .then(user => {
+            if (!user)
+                return False
+
+            return bcrypt.compare(password, user.password)
         })
     }
 }
