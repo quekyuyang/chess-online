@@ -10,12 +10,18 @@ class UserDatabase {
     }
 
     newUser(username, password) {
-        bcrypt.hash(password, 10)
+        this.users.findOne({username: username})
+        .then((result) => {
+            if (result === null)
+                return bcrypt.hash(password, 10)
+        })
         .then((hash) => {
-            return this.users.insertOne({
-                username: username,
-                password: hash
-            })
+            if (hash) {
+                return this.users.insertOne({
+                    username: username,
+                    password: hash
+                })
+            }
         })
     }
 
