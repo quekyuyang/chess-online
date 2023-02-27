@@ -37,6 +37,11 @@ function create_piece_sprite(img_path, id) {
   return sprite;
 }
 
+function setNames(playerName, opponentName) {
+  document.getElementById('playerName').innerHTML = playerName
+  document.getElementById('opponentName').innerHTML = opponentName
+}
+
 
 function update(chessboard, graveyard) {
   for (const chesspiece of graveyard) {
@@ -71,4 +76,4 @@ function clear_moves() {
 
 
 
-export { init, update, show_moves, clear_moves };
+export { init, setNames, update, show_moves, clear_moves };

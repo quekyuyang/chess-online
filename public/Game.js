@@ -1,4 +1,4 @@
-import {init, update} from "./render.js"
+import {init, setNames, update} from "./render.js"
 import {SpriteManager} from "./SpriteManager.js"
 import {get_match_data, send_move_to_server, get_match_state} from "./server_comms.js"
 import {flipBoard, flipMoves} from "./chessboardFlip.js"
@@ -11,6 +11,7 @@ class Game {
       this.color = data.color;
       const chessboard = this.color == 1 ? data.chessboard : flipBoard(data.chessboard)
       const sprites = init(chessboard.flat());
+      setNames(data.playerName, data.opponentName)
       update(chessboard, data.graveyard);
       this.sprite_manager = new SpriteManager(sprites, this.move_piece.bind(this));
       if (data.first_move)
