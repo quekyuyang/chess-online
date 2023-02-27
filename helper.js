@@ -26,15 +26,15 @@ function queue_match(req, res, database_interface) {
         ...match,
         first_move: first_move_current,
         color: 2,
-        playerName: req.session.username,
-        opponentName: req_waiting.req.session.username
+        playerName: req.session.username ? req.session.username : 'anonymous',
+        opponentName: req_waiting.req.session.username ? req_waiting.req.session.username : 'anonymous'
       })
       req_waiting.res.json({
         ...match,
         first_move: first_move_waiting,
         color: 1,
-        playerName: req_waiting.req.session.username,
-        opponentName: req.session.username
+        playerName: req_waiting.req.session.username ? req_waiting.req.session.username : 'anonymous',
+        opponentName: req.session.username ? req.session.username : 'anonymous'
       })
     })
     .catch(error => {
