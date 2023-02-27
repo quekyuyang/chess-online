@@ -25,12 +25,16 @@ function queue_match(req, res, database_interface) {
       res.json({
         ...match,
         first_move: first_move_current,
-        color: 2
+        color: 2,
+        playerName: req.session.username,
+        opponentName: req_waiting.req.session.username
       })
       req_waiting.res.json({
         ...match,
         first_move: first_move_waiting,
-        color: 1
+        color: 1,
+        playerName: req_waiting.req.session.username,
+        opponentName: req.session.username
       })
     })
     .catch(error => {

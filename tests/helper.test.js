@@ -8,7 +8,10 @@ class FakeReqGenerator {
 
   new_req() {
     const req = {
-      session: { id: 'id' + this.count.toString() }
+      session: {
+        id: 'id' + this.count.toString(),
+        username: 'user' + this.count.toString()
+       }
     }
     this.count++
     return req
@@ -66,8 +69,8 @@ test("Test matchmaking queue", async () => {
   expect(res2.json.mock.calls.length).toBe(1)
   expect(res3.json.mock.calls.length).toBe(1)
   expect(res4.json.mock.calls.length).toBe(1)
-  expect(res1.json.mock.calls[0][0]).toStrictEqual({...fake_match_data1, first_move:true, color: 1})
-  expect(res2.json.mock.calls[0][0]).toStrictEqual({...fake_match_data1, first_move:false, color: 2})
-  expect(res3.json.mock.calls[0][0]).toStrictEqual({...fake_match_data2, first_move:true, color: 1})
-  expect(res4.json.mock.calls[0][0]).toStrictEqual({...fake_match_data2, first_move:false, color: 2})
+  expect(res1.json.mock.calls[0][0]).toStrictEqual({...fake_match_data1, first_move:true, color: 1, playerName: req1.session.username, opponentName: req2.session.username})
+  expect(res2.json.mock.calls[0][0]).toStrictEqual({...fake_match_data1, first_move:false, color: 2, playerName: req2.session.username, opponentName: req1.session.username})
+  expect(res3.json.mock.calls[0][0]).toStrictEqual({...fake_match_data2, first_move:true, color: 1, playerName: req3.session.username, opponentName: req4.session.username})
+  expect(res4.json.mock.calls[0][0]).toStrictEqual({...fake_match_data2, first_move:false, color: 2, playerName: req4.session.username, opponentName: req3.session.username})
 })

@@ -14,8 +14,10 @@ index.post('/login', (req, res) => {
   const userDatabase = req.app.get('user_database');
   userDatabase.authenticate(req.body.username, req.body.password)
   .then((success) => {
-    if (success)
+    if (success) {
+      req.session.username = req.body.username
       res.redirect('/play')
+    }
     else
       res.redirect('/')
   })
