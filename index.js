@@ -1,7 +1,7 @@
 const express = require('express')
 var path = require('path');
 const index = express.Router();
-const queue_match = require("./helper.js");
+const queueMatch = require("./helper.js");
 
 
 let waiting = null;
@@ -38,7 +38,7 @@ index.get('/play', (req, res) => {
 });
 
 index.get('/new_match', (req, res) => {
-  queue_match(req, res, req.app.get('database_interface'));
+  queueMatch(req, res, req.app.get('database_interface'));
 });
 
 

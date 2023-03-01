@@ -1,5 +1,8 @@
 const express = require('express');
 const game_router = express.Router();
+const MoveManager = require('./chess/MoveManager');
+const Chessboard = require('./chess/Chessboard')
+const Vector = require('./chess/Position')
 
 
 game_router.all('*', (req, res, next) => {
@@ -9,14 +12,35 @@ game_router.all('*', (req, res, next) => {
 });
 
 game_router.post('/move_piece', function (req, res, next) {
-  const database_interface = req.app.get('database_interface');
-  database_interface.move_piece(req.session.match_id, req.session.id, req.body)
-  .then(function(state) {
-    res.json(state);
-    if (state.success)
-      update_opponent(req.session.match_id, state);
-  });
-});
+  const database_interface = req.app.get('database_interface')
+  database_interface.findMatch(req.session.match_id)
+  .then(match => {
+    if (req.session.id == match.player_ids[match.player_turn-1]) {
+      const chessboard = new Chessboard(match.chesspieces1, match.chesspieces2, match.graveyard)
+      const move_manager = new MoveManager(chessboard)
+      const success = move_manager.move_piece(req.body.id, new Vector(req.body.x, req.body.y), match.player_turn)
+
+      res.json({
+        success: success,
+        chessboard: chessboard.chessboard,
+        graveyard: chessboard.graveyard
+      })
+      if (success) {
+        const next_player_turn = match.player_turn % 2 + 1
+        database_interface.updateMatch(req.session.match_id, chessboard, next_player_turn)
+
+        const movesets = move_manager.compute_moves(next_player_turn)
+        const state = {
+          success: true,
+          chessboard: chessboard.chessboard,
+          graveyard: chessboard.graveyard,
+          moves: movesets
+        }
+        update_opponent(req.session.match_id, state)
+      }
+    }
+  })
+})
 
 let pending_res = {};
 game_router.get('/match_state', (req, res, next) => {
