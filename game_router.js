@@ -34,6 +34,7 @@ game_router.post('/move_piece', function (req, res, next) {
           success: true,
           chessboard: chessboard.chessboard,
           graveyard: chessboard.graveyard,
+          check: chessboard.kingIsThreatened(next_player_turn),
           moves: movesets
         }
         update_opponent(req.session.match_id, state)

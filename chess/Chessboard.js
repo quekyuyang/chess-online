@@ -1,5 +1,6 @@
 var { Rook, Bishop, Queen, Knight, Pawn, King } = require("./ChessPiece.js")
 var Vector = require("./Position.js");
+const {king_is_threatened} = require('./king_threats')
 
 
 class Chessboard {
@@ -146,6 +147,10 @@ class Chessboard {
       this.chesspieces2.splice(index, 1);
     }
     this.graveyard.push(captured);
+  }
+
+  kingIsThreatened(player) {
+    return king_is_threatened(this.get_king(player), this.chessboard)
   }
 
   get_king(player) {
