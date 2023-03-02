@@ -1,5 +1,4 @@
-const MoveManager = require('./chess/MoveManager');
-const Chessboard = require('./chess/Chessboard')
+const newGame = require('./chess/Game')
 
 
 let waiting = null;
@@ -13,46 +12,52 @@ function queueMatch(req, res, database_interface) {
     waiting = null
 
     return newMatch(req_waiting.req, req, database_interface)
-    .then(matchInfo => {
-      // Determine whether player of current request gets first move
-      const first_move_current = req.session.id == matchInfo.player_ids[0]
-      // Determine whether player of waiting request gets first move
-      const first_move_waiting = req_waiting.req.session.id == matchInfo.player_ids[0]
-
-      res.json({
-        ...matchInfo,
-        first_move: first_move_current,
-        color: 2,
-        playerName: req.session.username ? req.session.username : 'anonymous',
-        opponentName: req_waiting.req.session.username ? req_waiting.req.session.username : 'anonymous'
-      })
-      req_waiting.res.json({
-        ...matchInfo,
-        first_move: first_move_waiting,
-        color: 1,
-        playerName: req_waiting.req.session.username ? req_waiting.req.session.username : 'anonymous',
-        opponentName: req.session.username ? req.session.username : 'anonymous'
-      })
+    .then(responses => {
+      req_waiting.res.json(responses.res1)
+      res.json(responses.res2)
     })
   }
 }
 
 
 function newMatch(req1, req2, database_interface) {
-  const chessboard = new Chessboard()
-  chessboard.init()
-  return database_interface.newMatch(chessboard, req1.session.id, req2.session.id)
+  const game = newGame()
+  return database_interface.newMatch(game.chessboard, req1.session.id, req2.session.id)
   .then(match_id => {
     req1.session.match_id = match_id
     req2.session.match_id = match_id
-    const moveManager = new MoveManager(chessboard)
     const matchInfo = {
-      chessboard: chessboard.chessboard,
-      graveyard: chessboard.graveyard,
-      moves: moveManager.compute_moves(1),
+      chessboard: game.chessboard.chessboard,
+      graveyard: game.chessboard.graveyard,
+      moves: game.moves,
       player_ids: [req1.session.id, req2.session.id]
     }
-    return matchInfo
+
+    // Determine whether player of current request gets first move
+    const first_move_current = req2.session.id == matchInfo.player_ids[0]
+    // Determine whether player of waiting request gets first move
+    const first_move_waiting = req1.session.id == matchInfo.player_ids[0]
+
+    const res1 = {
+      ...matchInfo,
+      first_move: first_move_waiting,
+      color: 1,
+      playerName: req1.session.username ? req1.session.username : 'anonymous',
+      opponentName: req2.session.username ? req2.session.username : 'anonymous'
+    }
+
+    const res2 = {
+      ...matchInfo,
+        first_move: first_move_current,
+        color: 2,
+        playerName: req2.session.username ? req2.session.username : 'anonymous',
+        opponentName: req1.session.username ? req1.session.username : 'anonymous'
+    }
+
+    return {
+      res1: res1,
+      res2: res2
+    }
   })
 }
 
