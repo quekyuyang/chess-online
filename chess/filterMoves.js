@@ -1,4 +1,4 @@
-const find_king_threats = require('./king_threats.js');
+const {king_is_threatened} = require('./king_threats.js');
 const Chessboard = require('./Chessboard');
 
 
@@ -19,12 +19,6 @@ function filterMoves(moves, chessboard, player_turn) {
   }
 
   return moves_filtered
-}
-
-
-function king_is_threatened(king, chessboard) {
-  const [threats, pins] = find_king_threats(king, chessboard)
-  return threats.length > 0
 }
 
 

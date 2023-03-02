@@ -1,4 +1,4 @@
-const find_king_threats = require('../chess/king_threats')
+const {find_king_threats} = require('../chess/king_threats')
 
 
 var chessboard;

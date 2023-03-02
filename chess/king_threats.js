@@ -2,6 +2,11 @@ var Vector = require('./Position.js');
 const {generatePosKnight} = require('./generatePosKnight');
 
 
+function king_is_threatened(king, chessboard) {
+  const [threats, pins] = find_king_threats(king, chessboard)
+  return threats.length > 0
+}
+
 // Remove king in name? Don't necessarily apply only to king
 function find_king_threats(king, chessboard) {
   let threats = [];
@@ -213,4 +218,4 @@ function is_within_chessboard(pos) {
 }
 
 
-module.exports = find_king_threats;
+module.exports = {find_king_threats, king_is_threatened};
