@@ -3,12 +3,24 @@ body {
 }
 
 div.main {
-  display: flex;
-  flex-direction: column;
   position: relative;
   left: calc(50% - 400px);
   top: calc(50% - 400px);
+  width: 1500px;
+}
+
+div#game-main{
+  display: inline-flex;
+  flex-direction: column;
   width: 800px;
+}
+
+div#game-side {
+  display: inline-block;
+  width: 400px;
+  height: 900px;
+  text-align: center;
+  font-size: 40px;
 }
 
 p.username {
