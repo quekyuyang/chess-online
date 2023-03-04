@@ -1,4 +1,4 @@
-const newGame = require('./chess/Game')
+const {newGame} = require('./chess/Game')
 
 
 let waiting = null;

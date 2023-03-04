@@ -1,8 +1,6 @@
 const express = require('express');
 const game_router = express.Router();
-const MoveManager = require('./chess/MoveManager');
-const Chessboard = require('./chess/Chessboard')
-const Vector = require('./chess/Position')
+const {execMoveInGame} = require('./chess/Game')
 
 
 game_router.all('*', (req, res, next) => {
@@ -16,28 +14,21 @@ game_router.post('/move_piece', function (req, res, next) {
   database_interface.findMatch(req.session.match_id)
   .then(match => {
     if (req.session.id == match.player_ids[match.player_turn-1]) {
-      const chessboard = new Chessboard(match.chesspieces1, match.chesspieces2, match.graveyard)
-      const move_manager = new MoveManager(chessboard)
-      const success = move_manager.move_piece(req.body.id, new Vector(req.body.x, req.body.y), match.player_turn)
+      const gameStateNew = execMoveInGame(match, req.body.id, req.body.x, req.body.y)
 
-      res.json({
-        success: success,
-        chessboard: chessboard.chessboard,
-        graveyard: chessboard.graveyard
-      })
-      if (success) {
-        const next_player_turn = match.player_turn % 2 + 1
-        database_interface.updateMatch(req.session.match_id, chessboard, next_player_turn)
-
-        const movesets = move_manager.compute_moves(next_player_turn)
-        const state = {
+      if (gameStateNew === null) {
+        res.json({success: false})
+      }
+      else {
+        res.json({
           success: true,
-          chessboard: chessboard.chessboard,
-          graveyard: chessboard.graveyard,
-          check: chessboard.kingIsThreatened(next_player_turn),
-          moves: movesets
-        }
-        update_opponent(req.session.match_id, state)
+          chessboard: gameStateNew.chessboard.chessboard,
+          graveyard: gameStateNew.chessboard.graveyard
+        })
+        database_interface.updateMatch(req.session.match_id, gameStateNew.chessboard, gameStateNew.nextPlayerTurn)
+
+        gameStateNew.chessboard = gameStateNew.chessboard.chessboard // TODO: Somehow make it such that this is not needed
+        update_opponent(req.session.match_id, gameStateNew)
       }
     }
   })
