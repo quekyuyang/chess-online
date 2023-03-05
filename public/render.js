@@ -75,5 +75,10 @@ function clear_moves() {
 }
 
 
+function setMessage(message) {
+  const messageBox = document.getElementById("message")
+  messageBox.innerHTML = message
+}
 
-export { init, setNames, update, show_moves, clear_moves };
+
+export { init, setNames, update, show_moves, clear_moves, setMessage };

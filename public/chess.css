@@ -21,6 +21,7 @@ div#game-side {
   height: 900px;
   text-align: center;
   font-size: 40px;
+  vertical-align: top;
 }
 
 p.username {

@@ -1,4 +1,4 @@
-import {init, setNames, update} from "./render.js"
+import {init, setNames, update, setMessage} from "./render.js"
 import {SpriteManager} from "./SpriteManager.js"
 import {get_match_data, send_move_to_server, get_match_state} from "./server_comms.js"
 import {flipBoard, flipMoves} from "./chessboardFlip.js"
@@ -30,11 +30,20 @@ class Game {
     .then((data) => {
       if (data.success) {
         const chessboard = this.color == 1 ? data.chessboard : flipBoard(data.chessboard)
-        update(chessboard, data.graveyard);
-        this.sprite_manager.disable_move();
-        this.wait_for_update();
+        update(chessboard, data.graveyard)
+        this.sprite_manager.disable_move()
+        if (data.checkmate) {
+          setMessage('You win')
+        }
+        else if (data.stalemate) {
+          setMessage('Stalemate')
+        }
+        else {
+          setMessage('')
+          this.wait_for_update()
+        }
       }
-    });
+    })
   }
 
   wait_for_update() {
@@ -44,6 +53,18 @@ class Game {
       const moves = this.color == 1 ? state.moves : flipMoves(state.moves)
 
       update(chessboard, state.graveyard);
+      if (state.check) {
+        setMessage('Check')
+      }
+      else if (state.checkmate) {
+        setMessage('Checkmate')
+      }
+      else if (state.stalemate) {
+        setMessage('Stalemate')
+      }
+      else {
+        setMessage('')
+      }
       this.sprite_manager.enable_move(moves);
     });
   }

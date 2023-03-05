@@ -1,5 +1,5 @@
 import {Game} from "../public/Game.js"
-import {init, update} from "../public/render.js"
+import {setMessage} from "../public/render.js"
 import {SpriteManager} from "../public/SpriteManager.js"
 import {get_match_data, send_move_to_server, get_match_state} from "../public/server_comms.js"
 import {flipBoard, flipMoves} from "../public/chessboardFlip.js"
@@ -15,6 +15,7 @@ flipMoves.mockReturnValue("flippedMoves")
 
 beforeEach(() => {
   SpriteManager.mockClear()
+  setMessage.mockClear()
 })
 
 
@@ -89,4 +90,147 @@ test("Move piece then wait for opponent", async () => {
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls.length).toBe(2)
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls[1][0])
   .toBe(match_state3.moves)
+})
+
+
+const initMatchState = {
+  chessboard: [],
+  graveyard: null,
+  moves: "moves1"
+}
+
+const initMatchStateFirstMove = {
+  ...initMatchState,
+  first_move: true,
+  color: 1
+}
+
+const initMatchStateSecondMove = {
+  ...initMatchState,
+  first_move: false,
+  color: 2
+}
+
+const moveMatchState = {
+  chessboard: [],
+  graveyard: [],
+  success: true,
+}
+
+
+test("Display 'You win' if opponent checkmate after making move", async () => {
+  get_match_data.mockResolvedValue(initMatchStateFirstMove)
+  const game = new Game()
+  await game.init()
+
+  const moveMatchStateCheckmate = {
+    ...moveMatchState,
+    checkmate: true
+  }
+  send_move_to_server.mockResolvedValue(moveMatchStateCheckmate)
+  await game.move_piece('id', 1, 1)
+
+  expect(setMessage.mock.calls.length).toBe(1)
+  expect(setMessage.mock.calls[0][0]).toBe('You win')
+})
+
+
+test("Display 'Stalemate' if stalemate after making move", async () => {
+  get_match_data.mockResolvedValue(initMatchStateFirstMove)
+  const game = new Game()
+  await game.init()
+
+  const moveMatchStateStalemate = {
+    ...moveMatchState,
+    stalemate: true
+  }
+  send_move_to_server.mockResolvedValue(moveMatchStateStalemate)
+  await game.move_piece('id', 1, 1)
+
+  expect(setMessage.mock.calls.length).toBe(1)
+  expect(setMessage.mock.calls[0][0]).toBe('Stalemate')
+})
+
+
+test("Clear display message if neither checkmate nor stalemate after making move", async () => {
+  get_match_data.mockResolvedValue(initMatchStateFirstMove)
+  const game = new Game()
+  await game.init()
+
+  send_move_to_server.mockResolvedValue(moveMatchState)
+  await game.move_piece('id', 1, 1)
+
+  expect(setMessage.mock.calls.length).toBe(2)
+  expect(setMessage.mock.calls[0][0]).toBe('')
+})
+
+
+const newMatchState = {
+  chessboard: [],
+  graveyard: [],
+  moves: "moves"
+}
+
+
+test("Display 'Check' if checked after opponent move", async () => {
+  get_match_data.mockResolvedValue(initMatchStateSecondMove)
+
+  const newMatchStateCheck = {
+    ...newMatchState,
+    check: true
+  }
+  get_match_state.mockResolvedValue(newMatchStateCheck)
+
+  const game = new Game()
+  await game.init()
+
+  expect(setMessage.mock.calls.length).toBe(1)
+  expect(setMessage.mock.calls[0][0]).toBe('Check')
+})
+
+
+test("Display 'Checkmate' if checkmate after opponent move", async () => {
+  get_match_data.mockResolvedValue(initMatchStateSecondMove)
+
+  const newMatchStateCheckmate = {
+    ...newMatchState,
+    checkmate: true
+  }
+  get_match_state.mockResolvedValue(newMatchStateCheckmate)
+
+  const game = new Game()
+  await game.init()
+
+  expect(setMessage.mock.calls.length).toBe(1)
+  expect(setMessage.mock.calls[0][0]).toBe('Checkmate')
+})
+
+
+test("Display 'Stalemate' if stalemate after opponent move", async () => {
+  get_match_data.mockResolvedValue(initMatchStateSecondMove)
+
+  const newMatchStateStalemate = {
+    newMatchState,
+    stalemate: true
+  }
+  get_match_state.mockResolvedValue(newMatchStateStalemate)
+
+  const game = new Game()
+  await game.init()
+
+  expect(setMessage.mock.calls.length).toBe(1)
+  expect(setMessage.mock.calls[0][0]).toBe('Stalemate')
+})
+
+
+test("Clear display message if not check or checkmate or stalemate after opponent move", async () => {
+  get_match_data.mockResolvedValue(initMatchStateSecondMove)
+
+  get_match_state.mockResolvedValue(newMatchState)
+
+  const game = new Game()
+  await game.init()
+
+  expect(setMessage.mock.calls.length).toBe(1)
+  expect(setMessage.mock.calls[0][0]).toBe('')
 })
