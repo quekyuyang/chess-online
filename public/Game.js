@@ -1,21 +1,21 @@
 import {init, setNames, update, setMessage} from "./render.js"
 import {SpriteManager} from "./SpriteManager.js"
-import {get_match_data, send_move_to_server, get_match_state} from "./server_comms.js"
+import {newMatch, send_move_to_server, getGameState} from "./server_comms.js"
 import {flipBoard, flipMoves} from "./chessboardFlip.js"
 
 
 class Game {
   async init() {
-    await get_match_data()
-    .then((data) => {
-      this.color = data.color;
-      const chessboard = this.color == 1 ? data.chessboard : flipBoard(data.chessboard)
+    await newMatch()
+    .then((gameState) => {
+      this.color = gameState.color;
+      const chessboard = this.color == 1 ? gameState.chessboard : flipBoard(gameState.chessboard)
       const sprites = init(chessboard.flat());
-      setNames(data.playerName, data.opponentName)
-      update(chessboard, data.graveyard);
+      setNames(gameState.playerName, gameState.opponentName)
+      update(chessboard, gameState.graveyard);
       this.sprite_manager = new SpriteManager(sprites, this.move_piece.bind(this));
-      if (data.first_move)
-        this.sprite_manager.enable_move(data.moves);
+      if (gameState.first_move)
+        this.sprite_manager.enable_move(gameState.moves);
       else
         this.wait_for_update();
     });
@@ -47,19 +47,19 @@ class Game {
   }
 
   wait_for_update() {
-    return get_match_state()
-    .then((state) => {
-      const chessboard = this.color == 1 ? state.chessboard : flipBoard(state.chessboard)
-      const moves = this.color == 1 ? state.moves : flipMoves(state.moves)
+    return getGameState()
+    .then((gameState) => {
+      const chessboard = this.color == 1 ? gameState.chessboard : flipBoard(gameState.chessboard)
+      const moves = this.color == 1 ? gameState.moves : flipMoves(gameState.moves)
 
-      update(chessboard, state.graveyard);
-      if (state.check) {
+      update(chessboard, gameState.graveyard);
+      if (gameState.check) {
         setMessage('Check')
       }
-      else if (state.checkmate) {
+      else if (gameState.checkmate) {
         setMessage('Checkmate')
       }
-      else if (state.stalemate) {
+      else if (gameState.stalemate) {
         setMessage('Stalemate')
       }
       else {

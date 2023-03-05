@@ -1,4 +1,4 @@
-function get_match_data() {
+function newMatch() {
   return fetch('http://127.0.0.1:3000/new_match')
   .then((response) => response.json())
 }
@@ -16,9 +16,9 @@ function send_move_to_server(id, x, y) {
   .then((response) => response.json())
 }
 
-function get_match_state() {
+function getGameState() {
   return fetch('http://127.0.0.1:3000/game/match_state')
   .then((response) => response.json())
 }
 
-export {get_match_data, send_move_to_server, get_match_state}
+export {newMatch, send_move_to_server, getGameState}
