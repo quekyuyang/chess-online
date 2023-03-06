@@ -22,12 +22,7 @@ game_router.post('/move_piece', function (req, res, next) {
       else {
         res.json({
           success: true,
-          chesspieces1: gameStateNew.chesspieces1,
-          chesspieces2: gameStateNew.chesspieces2,
-          graveyard: gameStateNew.graveyard,
-          check: gameStateNew.check,
-          checkmate: gameStateNew.checkmate,
-          stalemate: gameStateNew.stalemate
+          ...gameStateNew
         })
         database_interface.updateMatch(req.session.match_id, gameStateNew)
         update_opponent(req.session.match_id, gameStateNew)
