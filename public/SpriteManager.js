@@ -1,4 +1,4 @@
-import {createPickupEvent} from "./UI.js"
+import {createPickupEvent} from "./dragNDrop.js"
 
 
 class SpriteManager {

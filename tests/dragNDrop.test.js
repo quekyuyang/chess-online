@@ -2,9 +2,7 @@
  * @jest-environment jsdom
  */
 
-//const createPickupEvent = require('../public/UI')
-import {createPickupEvent} from "../public/UI.js"
-import {show_moves} from "../public/render.js"
+import {createPickupEvent} from "../public/dragNDrop"
 
 
 jest.mock("../public/render.js")
