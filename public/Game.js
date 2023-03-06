@@ -1,4 +1,5 @@
-import {init, setNames, update, setMessage} from "./render.js"
+import {init} from "./render.js"
+import {initUpdateView, updateViewPlayerMove, updateViewOpponentMove} from "./UI.js"
 import {SpriteManager} from "./SpriteManager.js"
 import {newMatch, send_move_to_server, getGameState} from "./server_comms.js"
 import {flipPositions} from "./chessboardFlip.js"
@@ -12,8 +13,7 @@ class Game {
       if (this.color == 2) {flipPositions(gameState)}
 
       const sprites = init(gameState.chesspieces1.concat(gameState.chesspieces2));
-      setNames(gameState.playerName, gameState.opponentName)
-      update(gameState.chesspieces1.concat(gameState.chesspieces2), gameState.graveyard);
+      initUpdateView(gameState)
       this.sprite_manager = new SpriteManager(sprites, this.move_piece.bind(this));
       if (gameState.first_move)
         this.sprite_manager.enable_move(gameState.moves);
@@ -31,16 +31,9 @@ class Game {
     .then((data) => {
       if (data.success) {
         if (this.color == 2) {flipPositions(data)}
-        update(data.chesspieces1.concat(data.chesspieces2), data.graveyard)
+        updateViewPlayerMove(data)
         this.sprite_manager.disable_move()
-        if (data.checkmate) {
-          setMessage('You win')
-        }
-        else if (data.stalemate) {
-          setMessage('Stalemate')
-        }
-        else {
-          setMessage('')
+        if (!data.checkmate && !data.stalemate) {
           this.wait_for_update()
         }
       }
@@ -52,19 +45,7 @@ class Game {
     .then((gameState) => {
       if (this.color == 2) {flipPositions(gameState)}
 
-      update(gameState.chesspieces1.concat(gameState.chesspieces2), gameState.graveyard);
-      if (gameState.check) {
-        setMessage('Check')
-      }
-      else if (gameState.checkmate) {
-        setMessage('Checkmate')
-      }
-      else if (gameState.stalemate) {
-        setMessage('Stalemate')
-      }
-      else {
-        setMessage('')
-      }
+      updateViewOpponentMove(gameState)
       this.sprite_manager.enable_move(gameState.moves);
     });
   }
