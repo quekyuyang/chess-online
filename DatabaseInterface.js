@@ -10,13 +10,13 @@ class DatabaseInterface {
     this.pending_match_ids = new Set()
   }
 
-  newMatch(chessboard, player1, player2) {
+  newMatch(gameState, player1, player2) {
     const match_id = ObjectId()
     const match = {
       _id: match_id,
-      chesspieces1: chessboard.chesspieces1,
-      chesspieces2: chessboard.chesspieces2,
-      graveyard: chessboard.graveyard,
+      chesspieces1: gameState.chesspieces1,
+      chesspieces2: gameState.chesspieces2,
+      graveyard: gameState.graveyard,
       player_ids: [player1, player2],
       player_turn: 1
     }
@@ -29,11 +29,11 @@ class DatabaseInterface {
     return this.matches.findOne({_id: ObjectId(match_id)})
   }
 
-  updateMatch(match_id, chessboard, player_turn) {
+  updateMatch(match_id, gameState) {
     const update = {$set: {
-      chesspieces1: chessboard.chesspieces1,
-      chesspieces2: chessboard.chesspieces2,
-      player_turn: player_turn
+      chesspieces1: gameState.chesspieces1,
+      chesspieces2: gameState.chesspieces2,
+      player_turn: gameState.nextPlayerTurn
     }}
     this.matches.updateOne({_id: ObjectId(match_id)}, update)
   }

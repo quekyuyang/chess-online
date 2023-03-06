@@ -22,15 +22,14 @@ function queueMatch(req, res, database_interface) {
 
 function newMatch(req1, req2, database_interface) {
   const game = newGame()
-  return database_interface.newMatch(game.chessboard, req1.session.id, req2.session.id)
+  return database_interface.newMatch(game, req1.session.id, req2.session.id)
   .then(match_id => {
     req1.session.match_id = match_id
     req2.session.match_id = match_id
     const matchInfo = {
-      chessboard: game.chessboard.chessboard,
-      chesspieces1: game.chessboard.chesspieces1,
-      chesspieces2: game.chessboard.chesspieces2,
-      graveyard: game.chessboard.graveyard,
+      chesspieces1: game.chesspieces1,
+      chesspieces2: game.chesspieces2,
+      graveyard: game.graveyard,
       moves: game.moves,
       player_ids: [req1.session.id, req2.session.id]
     }
