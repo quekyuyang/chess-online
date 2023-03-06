@@ -28,6 +28,8 @@ function newMatch(req1, req2, database_interface) {
     req2.session.match_id = match_id
     const matchInfo = {
       chessboard: game.chessboard.chessboard,
+      chesspieces1: game.chessboard.chesspieces1,
+      chesspieces2: game.chessboard.chesspieces2,
       graveyard: game.chessboard.graveyard,
       moves: game.moves,
       player_ids: [req1.session.id, req2.session.id]

@@ -32,6 +32,8 @@ function execMoveInGame(gameState, id, x, y) {
 function createNextGameState(chessboard, moveManager, nextPlayerTurn) {
     const gameStateNew = {}
     gameStateNew.chessboard = chessboard
+    gameStateNew.chesspieces1 = chessboard.chesspieces1
+    gameStateNew.chesspieces2 = chessboard.chesspieces2
     gameStateNew.graveyard = chessboard.graveyard
 
     gameStateNew.nextPlayerTurn = nextPlayerTurn

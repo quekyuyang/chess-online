@@ -23,6 +23,8 @@ game_router.post('/move_piece', function (req, res, next) {
         res.json({
           success: true,
           chessboard: gameStateNew.chessboard.chessboard,
+          chesspieces1: gameStateNew.chesspieces1,
+          chesspieces2: gameStateNew.chesspieces2,
           graveyard: gameStateNew.chessboard.graveyard,
           check: gameStateNew.check,
           checkmate: gameStateNew.checkmate,
