@@ -1,7 +1,7 @@
 import {init, setNames, update, setMessage} from "./render.js"
 import {SpriteManager} from "./SpriteManager.js"
 import {newMatch, send_move_to_server, getGameState} from "./server_comms.js"
-import {flipBoard, flipMoves} from "./chessboardFlip.js"
+import {flipPositions} from "./chessboardFlip.js"
 
 
 class Game {
@@ -9,7 +9,7 @@ class Game {
     await newMatch()
     .then((gameState) => {
       this.color = gameState.color;
-      if (this.color == 2) {flipBoard(gameState)}
+      if (this.color == 2) {flipPositions(gameState)}
 
       const sprites = init(gameState.chesspieces1.concat(gameState.chesspieces2));
       setNames(gameState.playerName, gameState.opponentName)
@@ -30,7 +30,7 @@ class Game {
     await send_move_to_server(id, x, y)
     .then((data) => {
       if (data.success) {
-        if (this.color == 2) {flipBoard(data)}
+        if (this.color == 2) {flipPositions(data)}
         update(data.chesspieces1.concat(data.chesspieces2), data.graveyard)
         this.sprite_manager.disable_move()
         if (data.checkmate) {
@@ -50,8 +50,7 @@ class Game {
   wait_for_update() {
     return getGameState()
     .then((gameState) => {
-      if (this.color == 2) {flipBoard(gameState)}
-      const moves = this.color == 1 ? gameState.moves : flipMoves(gameState.moves)
+      if (this.color == 2) {flipPositions(gameState)}
 
       update(gameState.chesspieces1.concat(gameState.chesspieces2), gameState.graveyard);
       if (gameState.check) {
@@ -66,7 +65,7 @@ class Game {
       else {
         setMessage('')
       }
-      this.sprite_manager.enable_move(moves);
+      this.sprite_manager.enable_move(gameState.moves);
     });
   }
 }

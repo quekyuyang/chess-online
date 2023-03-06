@@ -1,4 +1,4 @@
-function flipBoard(gameState) {
+function flipPositions(gameState) {
   for (const chesspiece of gameState.chesspieces1) {
     chesspiece._pos.x = 7-chesspiece._pos.x
     chesspiece._pos.y = 7-chesspiece._pos.y
@@ -8,8 +8,9 @@ function flipBoard(gameState) {
     chesspiece._pos.x = 7-chesspiece._pos.x
     chesspiece._pos.y = 7-chesspiece._pos.y
   }
-}
 
+  gameState.moves = flipMoves(gameState.moves)
+}
   
 function flipMove(move) {
   return {
@@ -29,4 +30,4 @@ function flipMoves(moves) {
   return movesNew
 }
 
-export {flipBoard, flipMoves}
+export {flipPositions}

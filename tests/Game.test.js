@@ -2,7 +2,7 @@ import {Game} from "../public/Game.js"
 import {setMessage} from "../public/render.js"
 import {SpriteManager} from "../public/SpriteManager.js"
 import {newMatch, send_move_to_server, getGameState} from "../public/server_comms.js"
-import {flipBoard, flipMoves} from "../public/chessboardFlip.js"
+import {flipPositions} from "../public/chessboardFlip.js"
 
 
 jest.mock("../public/render.js")
@@ -10,49 +10,53 @@ jest.mock("../public/SpriteManager.js")
 jest.mock("../public/server_comms.js")
 jest.mock("../public/chessboardFlip.js")
 
-flipBoard.mockReturnValue([])
-flipMoves.mockReturnValue("flippedMoves")
+
+let gameState
+let gameState2
+let newGameStatePlayer1
+let newGameStatePlayer2
+let movePieceGameState
 
 beforeEach(() => {
   SpriteManager.mockClear()
   setMessage.mockClear()
+
+  gameState = {
+    chessboard: [],
+    chesspieces1: [],
+    chesspieces2: [],
+    graveyard: [],
+    moves: "moves1"
+  }
+  
+  gameState2 = {
+    chessboard: [],
+    chesspieces1: [],
+    chesspieces2: [],
+    graveyard: [],
+    moves: "moves2"
+  }
+  
+  newGameStatePlayer1 = {
+    ...gameState,
+    first_move: true,
+    color: 1
+  }
+  
+  newGameStatePlayer2 = {
+    ...gameState,
+    first_move: false,
+    color: 2
+  }
+  
+  movePieceGameState = {
+    chessboard: [],
+    chesspieces1: [],
+    chesspieces2: [],
+    graveyard: [],
+    success: true
+  }
 })
-
-const gameState = {
-  chessboard: [],
-  chesspieces1: [],
-  chesspieces2: [],
-  graveyard: [],
-  moves: "moves1"
-}
-
-const gameState2 = {
-  chessboard: [],
-  chesspieces1: [],
-  chesspieces2: [],
-  graveyard: [],
-  moves: "moves2"
-}
-
-const newGameStatePlayer1 = {
-  ...gameState,
-  first_move: true,
-  color: 1
-}
-
-const newGameStatePlayer2 = {
-  ...gameState,
-  first_move: false,
-  color: 2
-}
-
-const movePieceGameState = {
-  chessboard: [],
-  chesspieces1: [],
-  chesspieces2: [],
-  graveyard: [],
-  success: true
-}
 
 
 test("Start game with first move", async () => {
@@ -73,9 +77,8 @@ test("Start game without first move", async () => {
   const game = new Game()
   await game.init()
 
-  expect(SpriteManager.mock.instances[0].enable_move.mock.calls.length).toBe(1)
-  expect(SpriteManager.mock.instances[0].enable_move.mock.calls[0][0])
-  .toEqual("flippedMoves")
+  expect(flipPositions).toHaveBeenCalledWith(gameState)
+  expect(SpriteManager.mock.instances[0].enable_move).toHaveBeenCalledWith(gameState.moves)
 })
 
 
