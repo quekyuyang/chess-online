@@ -4,8 +4,6 @@ const index = express.Router();
 const queueMatch = require("./helper.js");
 
 
-let waiting = null;
-
 index.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
