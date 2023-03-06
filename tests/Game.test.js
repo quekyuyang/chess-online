@@ -20,12 +20,16 @@ beforeEach(() => {
 
 const gameState = {
   chessboard: [],
+  chesspieces1: [],
+  chesspieces2: [],
   graveyard: [],
   moves: "moves1"
 }
 
 const gameState2 = {
   chessboard: [],
+  chesspieces1: [],
+  chesspieces2: [],
   graveyard: [],
   moves: "moves2"
 }
@@ -44,6 +48,8 @@ const newGameStatePlayer2 = {
 
 const movePieceGameState = {
   chessboard: [],
+  chesspieces1: [],
+  chesspieces2: [],
   graveyard: [],
   success: true
 }
@@ -128,6 +134,7 @@ test("Clear display message if neither checkmate nor stalemate after making move
   await game.init()
 
   send_move_to_server.mockResolvedValue(movePieceGameState)
+  getGameState.mockResolvedValue(gameState2)
   await game.move_piece('id', 1, 1)
 
   expect(setMessage.mock.calls.length).toBe(2)
@@ -173,7 +180,7 @@ test("Display 'Stalemate' if stalemate after opponent move", async () => {
   newMatch.mockResolvedValue(newGameStatePlayer2)
 
   const newGameStateStalemate = {
-    gameState,
+    ...gameState,
     stalemate: true
   }
   getGameState.mockResolvedValue(newGameStateStalemate)

@@ -2,24 +2,18 @@ import {flipBoard, flipMoves} from "../public/chessboardFlip"
 
 
 test("Flip chessboard", () => {
-    const chessboard = new Array(8);
-    for (let i = 0; i < 8; i++) {
-        chessboard[i] = new Array(8).fill(null);
-    }
+    const chesspieces1 = [
+        {_pos: {x: 3, y: 0}}
+    ]
 
-    chessboard[0][3] = 'chesspiece'
-    chessboard[5][1] = 'chesspiece2'
-    
-    const chessboardExpect = new Array(8);
-    for (let i = 0; i < 8; i++) {
-        chessboardExpect[i] = new Array(8).fill(null);
-    }
+    const chesspieces2 = [
+        {_pos: {x: 1, y: 5}}
+    ]
 
-    chessboardExpect[7][4] = 'chesspiece'
-    chessboardExpect[2][6] = 'chesspiece2'
-
-    const flippedChessboard = flipBoard(chessboard)
-    expect(flippedChessboard).toEqual(chessboardExpect)
+    const gameState = {chesspieces1: chesspieces1, chesspieces2: chesspieces2}
+    flipBoard(gameState)
+    expect(gameState.chesspieces1[0]._pos).toEqual({x: 4, y: 7})
+    expect(gameState.chesspieces2[0]._pos).toEqual({x: 6, y: 2})
 })
 
 

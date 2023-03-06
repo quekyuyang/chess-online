@@ -8,14 +8,13 @@ function init(pieces) {
 
   const squares = document.querySelectorAll("div.chessboard div");
   const sprites = [];
-  for (let i = 0; i < pieces.length; i++) {
-    if (pieces[i]) {
-      const chesspiece = pieces[i];
-      const img_path = get_img_path(chesspiece.move_type, chesspiece.player);
-      const sprite = create_piece_sprite(img_path, chesspiece.id);
-      sprites[chesspiece.id] = sprite;
-      squares[i].append(sprite);
-    }
+  for (const chesspiece of pieces) {
+    const img_path = get_img_path(chesspiece.move_type, chesspiece.player)
+    const sprite = create_piece_sprite(img_path, chesspiece.id)
+    sprites[chesspiece.id] = sprite
+    const x = chesspiece._pos.x
+    const y = chesspiece._pos.y
+    squares[y*8 + x].append(sprite)
   }
 
   return sprites;
@@ -43,22 +42,19 @@ function setNames(playerName, opponentName) {
 }
 
 
-function update(chessboard, graveyard) {
+function update(pieces, graveyard) {
   for (const chesspiece of graveyard) {
     let img_elem = document.getElementById(chesspiece.id);
     img_elem.style.position = "absolute";
     img_elem.style.left = -1000;
   }
 
-  chessboard = chessboard.flat();
   let squares = document.querySelectorAll("div.chessboard div");
-  for (let i = 0; i < chessboard.length; i++) {
-    // if a chess piece is on square, render it there
-    if (chessboard[i]) {
-      const chesspiece = chessboard[i];
-      let img_elem = document.getElementById(chesspiece.id);
-      squares[i].append(img_elem);
-    }
+  for (const chesspiece of pieces) {
+    let img_elem = document.getElementById(chesspiece.id);
+    const x = chesspiece._pos.x
+    const y = chesspiece._pos.y
+    squares[y*8 + x].append(img_elem);
   }
 }
 

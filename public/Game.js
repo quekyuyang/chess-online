@@ -9,10 +9,11 @@ class Game {
     await newMatch()
     .then((gameState) => {
       this.color = gameState.color;
-      const chessboard = this.color == 1 ? gameState.chessboard : flipBoard(gameState.chessboard)
-      const sprites = init(chessboard.flat());
+      if (this.color == 2) {flipBoard(gameState)}
+
+      const sprites = init(gameState.chesspieces1.concat(gameState.chesspieces2));
       setNames(gameState.playerName, gameState.opponentName)
-      update(chessboard, gameState.graveyard);
+      update(gameState.chesspieces1.concat(gameState.chesspieces2), gameState.graveyard);
       this.sprite_manager = new SpriteManager(sprites, this.move_piece.bind(this));
       if (gameState.first_move)
         this.sprite_manager.enable_move(gameState.moves);
@@ -29,8 +30,8 @@ class Game {
     await send_move_to_server(id, x, y)
     .then((data) => {
       if (data.success) {
-        const chessboard = this.color == 1 ? data.chessboard : flipBoard(data.chessboard)
-        update(chessboard, data.graveyard)
+        if (this.color == 2) {flipBoard(data)}
+        update(data.chesspieces1.concat(data.chesspieces2), data.graveyard)
         this.sprite_manager.disable_move()
         if (data.checkmate) {
           setMessage('You win')
@@ -49,10 +50,10 @@ class Game {
   wait_for_update() {
     return getGameState()
     .then((gameState) => {
-      const chessboard = this.color == 1 ? gameState.chessboard : flipBoard(gameState.chessboard)
+      if (this.color == 2) {flipBoard(gameState)}
       const moves = this.color == 1 ? gameState.moves : flipMoves(gameState.moves)
 
-      update(chessboard, gameState.graveyard);
+      update(gameState.chesspieces1.concat(gameState.chesspieces2), gameState.graveyard);
       if (gameState.check) {
         setMessage('Check')
       }
