@@ -18,40 +18,52 @@ beforeEach(() => {
   setMessage.mockClear()
 })
 
+const gameState = {
+  chessboard: [],
+  graveyard: [],
+  moves: "moves1"
+}
+
+const gameState2 = {
+  chessboard: [],
+  graveyard: [],
+  moves: "moves2"
+}
+
+const newGameStatePlayer1 = {
+  ...gameState,
+  first_move: true,
+  color: 1
+}
+
+const newGameStatePlayer2 = {
+  ...gameState,
+  first_move: false,
+  color: 2
+}
+
+const movePieceGameState = {
+  chessboard: [],
+  graveyard: [],
+  success: true
+}
+
 
 test("Start game with first move", async () => {
-  const match_state = {
-    chessboard: [],
-    graveyard: null,
-    first_move: true,
-    color: 1,
-    moves: "moves"
-  }
-  newMatch.mockResolvedValue(match_state)
+  newMatch.mockResolvedValue(newGameStatePlayer1)
   const game = new Game()
   await game.init()
 
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls.length).toBe(1)
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls[0][0])
-  .toBe(match_state.moves)
+  .toBe(newGameStatePlayer1.moves)
 })
 
 
 test("Start game without first move", async () => {
-  const new_match_state = {
-    chessboard: [],
-    graveyard: [],
-    moves: "moves"
-  }
-  getGameState.mockResolvedValue(new_match_state)
+  newMatch.mockResolvedValue(newGameStatePlayer2)
+  getGameState.mockResolvedValue(gameState)
 
-  const init_match_state = {
-    chessboard: [],
-    graveyard: null,
-    first_move: false,
-    color: 2
-  }
-  newMatch.mockResolvedValue(init_match_state)
   const game = new Game()
   await game.init()
 
@@ -62,69 +74,27 @@ test("Start game without first move", async () => {
 
 
 test("Move piece then wait for opponent", async () => {
-  const match_state1 = {
-    chessboard: [],
-    graveyard: null,
-    first_move: true,
-    color: 1,
-    moves: "moves1"
-  }
-  newMatch.mockResolvedValue(match_state1)
+  newMatch.mockResolvedValue(newGameStatePlayer1)
   const game = new Game()
   await game.init()
 
-  const match_state2 = {
-    chessboard: [],
-    graveyard: [],
-    success: true
-  }
-  send_move_to_server.mockResolvedValue(match_state2)
-  const match_state3 = {
-    chessboard: [],
-    graveyard: [],
-    moves: "moves2"
-  }
-  getGameState.mockResolvedValue(match_state3)
-
+  send_move_to_server.mockResolvedValue(movePieceGameState)
+  getGameState.mockResolvedValue(gameState2)
   await game.move_piece('id', 1, 1)
+
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls.length).toBe(2)
   expect(SpriteManager.mock.instances[0].enable_move.mock.calls[1][0])
-  .toBe(match_state3.moves)
+  .toBe(gameState2.moves)
 })
 
 
-const initMatchState = {
-  chessboard: [],
-  graveyard: null,
-  moves: "moves1"
-}
-
-const initMatchStateFirstMove = {
-  ...initMatchState,
-  first_move: true,
-  color: 1
-}
-
-const initMatchStateSecondMove = {
-  ...initMatchState,
-  first_move: false,
-  color: 2
-}
-
-const moveMatchState = {
-  chessboard: [],
-  graveyard: [],
-  success: true,
-}
-
-
 test("Display 'You win' if opponent checkmate after making move", async () => {
-  newMatch.mockResolvedValue(initMatchStateFirstMove)
+  newMatch.mockResolvedValue(newGameStatePlayer1)
   const game = new Game()
   await game.init()
 
   const moveMatchStateCheckmate = {
-    ...moveMatchState,
+    ...movePieceGameState,
     checkmate: true
   }
   send_move_to_server.mockResolvedValue(moveMatchStateCheckmate)
@@ -136,12 +106,12 @@ test("Display 'You win' if opponent checkmate after making move", async () => {
 
 
 test("Display 'Stalemate' if stalemate after making move", async () => {
-  newMatch.mockResolvedValue(initMatchStateFirstMove)
+  newMatch.mockResolvedValue(newGameStatePlayer1)
   const game = new Game()
   await game.init()
 
   const moveMatchStateStalemate = {
-    ...moveMatchState,
+    ...movePieceGameState,
     stalemate: true
   }
   send_move_to_server.mockResolvedValue(moveMatchStateStalemate)
@@ -153,11 +123,11 @@ test("Display 'Stalemate' if stalemate after making move", async () => {
 
 
 test("Clear display message if neither checkmate nor stalemate after making move", async () => {
-  newMatch.mockResolvedValue(initMatchStateFirstMove)
+  newMatch.mockResolvedValue(newGameStatePlayer1)
   const game = new Game()
   await game.init()
 
-  send_move_to_server.mockResolvedValue(moveMatchState)
+  send_move_to_server.mockResolvedValue(movePieceGameState)
   await game.move_piece('id', 1, 1)
 
   expect(setMessage.mock.calls.length).toBe(2)
@@ -165,21 +135,14 @@ test("Clear display message if neither checkmate nor stalemate after making move
 })
 
 
-const newMatchState = {
-  chessboard: [],
-  graveyard: [],
-  moves: "moves"
-}
-
-
 test("Display 'Check' if checked after opponent move", async () => {
-  newMatch.mockResolvedValue(initMatchStateSecondMove)
+  newMatch.mockResolvedValue(newGameStatePlayer2)
 
-  const newMatchStateCheck = {
-    ...newMatchState,
+  const newGameStateCheck = {
+    ...gameState,
     check: true
   }
-  getGameState.mockResolvedValue(newMatchStateCheck)
+  getGameState.mockResolvedValue(newGameStateCheck)
 
   const game = new Game()
   await game.init()
@@ -190,13 +153,13 @@ test("Display 'Check' if checked after opponent move", async () => {
 
 
 test("Display 'Checkmate' if checkmate after opponent move", async () => {
-  newMatch.mockResolvedValue(initMatchStateSecondMove)
+  newMatch.mockResolvedValue(newGameStatePlayer2)
 
-  const newMatchStateCheckmate = {
-    ...newMatchState,
+  const newGameStateCheckmate = {
+    ...gameState,
     checkmate: true
   }
-  getGameState.mockResolvedValue(newMatchStateCheckmate)
+  getGameState.mockResolvedValue(newGameStateCheckmate)
 
   const game = new Game()
   await game.init()
@@ -207,13 +170,13 @@ test("Display 'Checkmate' if checkmate after opponent move", async () => {
 
 
 test("Display 'Stalemate' if stalemate after opponent move", async () => {
-  newMatch.mockResolvedValue(initMatchStateSecondMove)
+  newMatch.mockResolvedValue(newGameStatePlayer2)
 
-  const newMatchStateStalemate = {
-    newMatchState,
+  const newGameStateStalemate = {
+    gameState,
     stalemate: true
   }
-  getGameState.mockResolvedValue(newMatchStateStalemate)
+  getGameState.mockResolvedValue(newGameStateStalemate)
 
   const game = new Game()
   await game.init()
@@ -224,9 +187,9 @@ test("Display 'Stalemate' if stalemate after opponent move", async () => {
 
 
 test("Clear display message if not check or checkmate or stalemate after opponent move", async () => {
-  newMatch.mockResolvedValue(initMatchStateSecondMove)
+  newMatch.mockResolvedValue(newGameStatePlayer2)
 
-  getGameState.mockResolvedValue(newMatchState)
+  getGameState.mockResolvedValue(gameState)
 
   const game = new Game()
   await game.init()
