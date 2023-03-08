@@ -22,18 +22,14 @@ beforeEach(() => {
   setMessage.mockClear()
 
   gameState = {
-    chessboard: [],
     chesspieces1: [],
     chesspieces2: [],
-    graveyard: [],
     moves: "moves1"
   }
   
   gameState2 = {
-    chessboard: [],
     chesspieces1: [],
     chesspieces2: [],
-    graveyard: [],
     moves: "moves2"
   }
   
@@ -50,10 +46,8 @@ beforeEach(() => {
   }
   
   movePieceGameState = {
-    chessboard: [],
     chesspieces1: [],
     chesspieces2: [],
-    graveyard: [],
     success: true
   }
 })
