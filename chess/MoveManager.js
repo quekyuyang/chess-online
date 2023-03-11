@@ -29,7 +29,7 @@ class MoveManager {
       }
     })
     if (!chesspiece)
-      throw "Attempt to move non-active player's chess piece or chess piece unregistered in MoveManager";
+      return false
 
     const move = movesets[id].find(move => move.pos.equals(pos));
     if (move) {
