@@ -60,8 +60,8 @@ class Chessboard {
     this.chessboard[chesspiece.pos.y][chesspiece.pos.x] = chesspiece;
   }
 
-  add_rook(player, pos, id) {
-    const rook = new Rook(player, pos.y, pos.x, id ? id : this.count_pieces())
+  add_rook(player, pos, id, hasMoved) {
+    const rook = new Rook(player, pos.y, pos.x, id ? id : this.count_pieces(), hasMoved)
     this.add_piece(rook)
   }
 
@@ -80,8 +80,8 @@ class Chessboard {
     this.add_piece(knight)
   }
 
-  add_king(player, pos, id) {
-    const king = new King(player, pos.y, pos.x, id ? id : this.count_pieces())
+  add_king(player, pos, id, hasMoved) {
+    const king = new King(player, pos.y, pos.x, id ? id : this.count_pieces(), hasMoved)
     this.add_piece(king)
   }
 
@@ -93,7 +93,7 @@ class Chessboard {
   _restore_piece(data) {
     switch (data.move_type) {
       case 'rook':
-        this.add_rook(data.player, data._pos, data.id)
+        this.add_rook(data.player, data._pos, data.id, data.has_moved)
         break
       case 'bishop':
         this.add_bishop(data.player, data._pos, data.id)
@@ -105,7 +105,7 @@ class Chessboard {
         this.add_knight(data.player, data._pos, data.id)
         break
       case 'king':
-        this.add_king(data.player, data._pos, data.id)
+        this.add_king(data.player, data._pos, data.id, data.has_moved)
         break
       case 'pawn':
         this.add_pawn(data.player, data._pos, data.id, data.has_moved, data.vulnerable_to_enpassant)
@@ -164,6 +164,16 @@ class Chessboard {
       chesspiece = this.chesspieces2.find(chesspiece => chesspiece.id == id)
     }
     return chesspiece
+  }
+
+  hasObstacleInRowBetweenCols(row, col1, col2) {
+    const colLow = col1 < col2 ? col1 : col2
+    const colHigh = col1 < col2 ? col2 : col1
+    for (let col = colLow+1; col < colHigh; col++) {
+      if (this.chessboard[row][col] !== null)
+        return true
+    }
+    return false
   }
 }
 

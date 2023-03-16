@@ -1,6 +1,7 @@
 var Vector = require('./Position.js');
 const generate_base_movesets = require('./base_moveset');
 const filterMoves = require('./filterMoves');
+const generateCastling = require('./generateCastling')
 
 
 class MoveManager {
@@ -9,9 +10,12 @@ class MoveManager {
     this.player_turn = 2; // Start with 2 because next_turn will be called for first turn
   }
 
-  compute_moves(player_turn) {
-    let moves = generate_base_movesets(this.chessboard.chessboard, player_turn);
-    return filterMoves(moves, this.chessboard, player_turn);
+  compute_moves(playerTurn) {
+    let moves = generate_base_movesets(this.chessboard.chessboard, playerTurn);
+    moves = filterMoves(moves, this.chessboard, playerTurn);
+    const king = this.chessboard.get_king(playerTurn)
+    moves[king.id] = moves[king.id].concat(generateCastling(this.chessboard, playerTurn))
+    return moves
   }
 
   move_piece(id, pos, player_turn) {

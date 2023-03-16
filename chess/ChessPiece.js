@@ -19,9 +19,19 @@ class ChessPiece {
 
 
 class Rook extends ChessPiece {
-  constructor(player_n, y, x, id) {
+  constructor(player_n, y, x, id, has_moved) {
     super(player_n, y, x, id);
     this.move_type = "rook";
+    this.has_moved = has_moved
+  }
+
+  get pos() {
+    return this._pos;
+  }
+
+  set pos(posNew) {
+    this.has_moved = true
+    this._pos = posNew
   }
 }
 
@@ -73,9 +83,19 @@ class Pawn extends ChessPiece {
 
 
 class King extends ChessPiece {
-  constructor(player_n, y, x, id) {
+  constructor(player_n, y, x, id, has_moved) {
     super(player_n, y, x, id);
     this.move_type = "king";
+    this.has_moved = has_moved
+  }
+
+  get pos() {
+    return this._pos;
+  }
+
+  set pos(posNew) {
+    this.has_moved = true
+    this._pos = posNew
   }
 }
 
