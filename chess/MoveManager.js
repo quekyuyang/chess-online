@@ -1,4 +1,5 @@
 var Vector = require('./Position.js');
+const Move = require('./Move')
 const generate_base_movesets = require('./base_moveset');
 const filterMoves = require('./filterMoves');
 const generateCastling = require('./generateCastling')
@@ -38,6 +39,7 @@ class MoveManager {
     const move = movesets[id].find(move => move.pos.equals(pos));
     if (move) {
       this.chessboard.move_piece(chesspiece.pos.y, chesspiece.pos.x, move);
+      this.checkCastling(chesspiece, pos)
       return true;
     }
     else
@@ -48,6 +50,21 @@ class MoveManager {
     for (let chesspiece of chesspieces) {
       if (chesspiece && chesspiece.vulnerable_to_enpassant && chesspiece.player == player_turn)
         chesspiece.vulnerable_to_enpassant = false;
+    }
+  }
+
+  checkCastling(chesspiece, dest) {
+    if (chesspiece.move_type == 'king') {
+      if (dest.x == 2) {
+        const rook = this.chessboard.chessboard[dest.y][0]
+        const castlingMove = new Move(new Vector(dest.x+1, dest.y))
+        this.chessboard.move_piece(rook.pos.y, rook.pos.x, castlingMove)
+      }
+      else if (dest.x == 6) {
+        const rook = this.chessboard.chessboard[dest.y][7]
+        const castlingMove = new Move(new Vector(dest.x-1, dest.y))
+        this.chessboard.move_piece(rook.pos.y, rook.pos.x, castlingMove)
+      }
     }
   }
 }
