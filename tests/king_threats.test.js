@@ -286,6 +286,12 @@ describe('King threatened by pawn', () => {
 
     expect(threats.length).toBe(0)
   })
+
+  test('King at side edge of board does not crash pawn threat algorithm', () => {
+    const king = addToChessboard('king', 7, 4, 2)
+    const [threats, pins] = find_king_threats(king, chessboard)
+    expect(threats).toBeDefined()
+  })
 })
 
 

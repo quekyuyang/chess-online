@@ -183,6 +183,7 @@ function check_pawn_threats(king, chessboard) {
     if (is_within_chessboard(pos))
       return pos
   })
+  .filter(pos => pos !== undefined)
   const threats = abs_pos.map(pos => chessboard[pos.y][pos.x])
                   .filter(chesspiece => chesspiece !== null)
                   .filter(chesspiece => chesspiece.move_type == 'pawn')
