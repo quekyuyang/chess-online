@@ -20,7 +20,8 @@ function createPickupEvent(elem, moves, containingElem, move_piece) {
     this.style.zIndex = 0;
     let elements_at_pos = document.elementsFromPoint(event.pageX, event.pageY);
     for (let element of elements_at_pos) {
-      if (element.classList.contains("square")) {
+      const moveValid = current_player_moves[this.id].some(move => move.pos.x == element.dataset.col && move.pos.y == element.dataset.row)
+      if (moveValid && element.classList.contains("square")) {
         move_piece(this.id, element.dataset.col, element.dataset.row);
         break;
       }
