@@ -1,5 +1,5 @@
 import {init} from "./render.js"
-import {initUpdateView, updateViewPlayerMove, updateViewOpponentMove} from "./UI.js"
+import {initUpdateView, updateView, updateViewPlayerMove, updateViewOpponentMove} from "./UI.js"
 import {SpriteManager} from "./SpriteManager.js"
 import {newMatch, send_move_to_server, getGameState} from "./server_comms.js"
 import {flipPositions} from "./chessboardFlip.js"
@@ -12,6 +12,7 @@ class Game {
       this.color = gameState.color;
       if (this.color == 2) {flipPositions(gameState)}
 
+      this.state = gameState
       const sprites = init(gameState.chesspieces1.concat(gameState.chesspieces2));
       initUpdateView(gameState)
       this.sprite_manager = new SpriteManager(sprites, this.move_piece.bind(this));
@@ -23,17 +24,25 @@ class Game {
   }
 
   async move_piece(id, x, y) {
+    const chesspieces = this.color == 1 ? this.state.chesspieces1 : this.state.chesspieces2
+    const chesspiece = chesspieces.find(chesspiece => chesspiece.id == id)
+    chesspiece._pos.x = x
+    chesspiece._pos.y = y
+    updateView(this.state)
+
     if (this.color == 2) {
       y = 7-y
       x = 7-x
     }
     await send_move_to_server(id, x, y)
-    .then((data) => {
-      if (data.success) {
-        if (this.color == 2) {flipPositions(data)}
-        updateViewPlayerMove(data)
+    .then((gameState) => {
+      if (gameState.success) {
+        if (this.color == 2) {flipPositions(gameState)}
+
+        this.state = gameState
+        updateViewPlayerMove(gameState)
         this.sprite_manager.disable_move()
-        if (!data.checkmate && !data.stalemate) {
+        if (!gameState.checkmate && !gameState.stalemate) {
           this.wait_for_update()
         }
       }
@@ -45,6 +54,7 @@ class Game {
     .then((gameState) => {
       if (this.color == 2) {flipPositions(gameState)}
 
+      this.state = gameState
       updateViewOpponentMove(gameState)
       this.sprite_manager.enable_move(gameState.moves);
     });

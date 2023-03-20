@@ -22,7 +22,7 @@ function createPickupEvent(elem, moves, containingElem, move_piece) {
     for (let element of elements_at_pos) {
       const moveValid = current_player_moves[this.id].some(move => move.pos.x == element.dataset.col && move.pos.y == element.dataset.row)
       if (moveValid && element.classList.contains("square")) {
-        move_piece(this.id, element.dataset.col, element.dataset.row);
+        move_piece(this.id, Number(element.dataset.col), Number(element.dataset.row));
         break;
       }
     }
