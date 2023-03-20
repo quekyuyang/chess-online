@@ -38,8 +38,8 @@ class MoveManager {
 
     const move = movesets[id].find(move => move.pos.equals(pos));
     if (move) {
-      this.chessboard.move_piece(chesspiece.pos.y, chesspiece.pos.x, move);
       this.checkCastling(chesspiece, pos)
+      this.chessboard.move_piece(chesspiece.pos.y, chesspiece.pos.x, move);
       return true;
     }
     else
@@ -54,7 +54,7 @@ class MoveManager {
   }
 
   checkCastling(chesspiece, dest) {
-    if (chesspiece.move_type == 'king') {
+    if (chesspiece.move_type == 'king' && !chesspiece.has_moved) {
       if (dest.x == 2) {
         const rook = this.chessboard.chessboard[dest.y][0]
         const castlingMove = new Move(new Vector(dest.x+1, dest.y))

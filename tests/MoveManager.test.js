@@ -113,6 +113,16 @@ describe('Castling white side', () => {
         expect(chessboard.chessboard[7][6]).toBe(king)
         expect(chessboard.chessboard[7][5]).toBe(rook2)
     })
+
+    test('Do not execute castling if king has moved before', () => {
+        const moveManager = new MoveManager(chessboard)
+        const rook2 = chessboard.chessboard[7][7]
+        moveManager.move_piece(wking_id, new Vector(5, 7), 1)
+        moveManager.move_piece(wking_id, new Vector(6, 7), 1)
+
+        expect(chessboard.chessboard[7][5]).not.toBe(rook2)
+        expect(chessboard.chessboard[7][7]).toBe(rook2)
+    })
 })
 
 
