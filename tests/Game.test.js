@@ -11,14 +11,13 @@ jest.mock("../public/server_comms.js")
 jest.mock("../public/chessboardFlip.js")
 
 
-let gameState
-let gameState2
-let newGameStatePlayer1
-let newGameStatePlayer2
-let movePieceGameState
-
-
 describe('', () => {
+  let gameState
+  let gameState2
+  let newGameStatePlayer1
+  let newGameStatePlayer2
+  let movePieceGameState
+
   beforeEach(() => {
     SpriteManager.mockClear()
     setMessage.mockClear()
@@ -207,36 +206,63 @@ describe('', () => {
 
 
 describe("", () => {
-  test("Move piece should update internal chess pieces", async () => {
+  let game
+  let gameState
+  let gameState2
+  let gameState3
+  let waitForUpdateData
+
+  beforeEach(async () => {
     update.mockClear()
 
-    const newMatchGameState = {
+    // Mock newMatch
+    gameState = {
       chesspieces1: [{id: 'id1', _pos: {x: 4, y: 4}}],
       chesspieces2: [],
       graveyard: [],
+    }
+    const newMatchData = {
+      ...gameState,
       moves: "moves1",
       first_move: true,
       color: 1
     }
-    newMatch.mockResolvedValue(newMatchGameState)
-    const game = new Game()
+    newMatch.mockResolvedValue(newMatchData)
+    game = new Game()
     await game.init()
-  
-    movePieceGameState = {
-      chesspieces1: [],
-      chesspieces2: [],
-      success: true
-    }
-    send_move_to_server.mockResolvedValue(movePieceGameState)
 
-    const waitForUpdateGameState = {
-      chesspieces1: [],
+    // Mock send_move_to_server
+    gameState2 = {
+      chesspieces1: [{id: 'id1', _pos: {x: 1, y: 1}}],
       chesspieces2: [],
       graveyard: [],
+    }
+    const movePieceData = {
+      ...gameState2,
+      success: true
+    }
+    send_move_to_server.mockResolvedValue(movePieceData)
+
+    gameState3 = {
+      chesspieces1: [{id: 'id1', _pos: {x: 1, y: 1}}],
+      chesspieces2: [],
+      graveyard: []
+    }
+
+    // Mock getGameState
+    waitForUpdateData = {
+      ...gameState3,
       moves: "moves2",
     }
-    getGameState.mockResolvedValue(waitForUpdateGameState)
+    getGameState.mockResolvedValue(waitForUpdateData)
+  })
 
+
+  test("Render update with initial game state", async () => {
+    expect(update).toBeCalledWith(gameState.chesspieces1.concat(gameState.chesspieces2), gameState.graveyard)
+  })
+
+  test("Render update immediately after moving piece", async () => {
     const targetChesspiece = {id: 'id1', _pos: {x: 1, y: 1}}
     await game.move_piece(targetChesspiece.id, targetChesspiece._pos.x, targetChesspiece._pos.y)
 
@@ -246,13 +272,7 @@ describe("", () => {
       graveyard: []
     }
 
-    const waitForUpdateStateExpect = {
-      chesspieces1: [],
-      chesspieces2: [],
-      graveyard: []
-    }
-
     expect(update).nthCalledWith(2, movePieceStateExpect.chesspieces1.concat(movePieceStateExpect.chesspieces2), movePieceStateExpect.graveyard)
-    expect(update).nthCalledWith(4, waitForUpdateStateExpect.chesspieces1.concat(waitForUpdateStateExpect.chesspieces2), waitForUpdateStateExpect.graveyard)
+    expect(update).nthCalledWith(4, waitForUpdateData.chesspieces1.concat(waitForUpdateData.chesspieces2), waitForUpdateData.graveyard)
   })
 })
