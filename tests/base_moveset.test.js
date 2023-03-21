@@ -1,5 +1,6 @@
 const generate_base_movesets = require('../chess/base_moveset')
-
+const Move = require('../chess/Move')
+const Vector = require('../chess/Position')
 
 var chessboard = null
 beforeEach(() => {
@@ -15,20 +16,20 @@ test('Rook moveset', () => {
 
   const expected_movesets = {
     '0': expect.arrayContaining([
-      {pos: {y:3, x:3}, capture: null},
-      {pos: {y:2, x:3}, capture: null},
-      {pos: {y:1, x:3}, capture: null},
-      {pos: {y:0, x:3}, capture: null},
-      {pos: {y:5, x:3}, capture: null},
-      {pos: {y:6, x:3}, capture: null},
-      {pos: {y:7, x:3}, capture: null},
-      {pos: {y:4, x:2}, capture: null},
-      {pos: {y:4, x:1}, capture: null},
-      {pos: {y:4, x:0}, capture: null},
-      {pos: {y:4, x:4}, capture: null},
-      {pos: {y:4, x:5}, capture: null},
-      {pos: {y:4, x:6}, capture: null},
-      {pos: {y:4, x:7}, capture: null},
+      new Move(new Vector(3, 3)),
+      new Move(new Vector(3, 2)),
+      new Move(new Vector(3, 1)),
+      new Move(new Vector(3, 0)),
+      new Move(new Vector(3, 5)),
+      new Move(new Vector(3, 6)),
+      new Move(new Vector(3, 7)),
+      new Move(new Vector(2, 4)),
+      new Move(new Vector(1, 4)),
+      new Move(new Vector(0, 4)),
+      new Move(new Vector(4, 4)),
+      new Move(new Vector(5, 4)),
+      new Move(new Vector(6, 4)),
+      new Move(new Vector(7, 4))
     ])
   }
 
@@ -42,18 +43,18 @@ test('Rook moveset blocked by ally', () => {
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y:3, x:3}, capture: null},
-    {pos: {y:5, x:3}, capture: null},
-    {pos: {y:6, x:3}, capture: null},
-    {pos: {y:7, x:3}, capture: null},
-    {pos: {y:4, x:2}, capture: null},
-    {pos: {y:4, x:1}, capture: null},
-    {pos: {y:4, x:0}, capture: null},
-    {pos: {y:4, x:4}, capture: null},
-    {pos: {y:4, x:5}, capture: null},
-    {pos: {y:4, x:6}, capture: null},
-    {pos: {y:4, x:7}, capture: null}
-  ]
+    new Move(new Vector(3, 3)),
+    new Move(new Vector(3, 5)),
+    new Move(new Vector(3, 6)),
+    new Move(new Vector(3, 7)),
+    new Move(new Vector(2, 4)),
+    new Move(new Vector(1, 4)),
+    new Move(new Vector(0, 4)),
+    new Move(new Vector(4, 4)),
+    new Move(new Vector(5, 4)),
+    new Move(new Vector(6, 4)),
+    new Move(new Vector(7, 4))
+    ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
   expect(movesets['0']).toEqual(expect.arrayContaining(expected_moveset))
@@ -65,19 +66,19 @@ test('Rook moveset blocked by enemy', () => {
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y:2, x:3}, capture: chessboard[2][3]},
-    {pos: {y:3, x:3}, capture: null},
-    {pos: {y:5, x:3}, capture: null},
-    {pos: {y:6, x:3}, capture: null},
-    {pos: {y:7, x:3}, capture: null},
-    {pos: {y:4, x:2}, capture: null},
-    {pos: {y:4, x:1}, capture: null},
-    {pos: {y:4, x:0}, capture: null},
-    {pos: {y:4, x:4}, capture: null},
-    {pos: {y:4, x:5}, capture: null},
-    {pos: {y:4, x:6}, capture: null},
-    {pos: {y:4, x:7}, capture: null}
-  ]
+    new Move(new Vector(3, 2), chessboard[2][3]),
+    new Move(new Vector(3, 3)),
+    new Move(new Vector(3, 5)),
+    new Move(new Vector(3, 6)),
+    new Move(new Vector(3, 7)),
+    new Move(new Vector(2, 4)),
+    new Move(new Vector(1, 4)),
+    new Move(new Vector(0, 4)),
+    new Move(new Vector(4, 4)),
+    new Move(new Vector(5, 4)),
+    new Move(new Vector(6, 4)),
+    new Move(new Vector(7, 4))
+    ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
   expect(movesets['0']).toEqual(expect.arrayContaining(expected_moveset))
@@ -89,20 +90,21 @@ test('Bishop moveset', () => {
 
   const expected_movesets = {
     '0': expect.arrayContaining([
-      {pos: {y:3, x:2}, capture: null},
-      {pos: {y:2, x:1}, capture: null},
-      {pos: {y:1, x:0}, capture: null},
-      {pos: {y:3, x:4}, capture: null},
-      {pos: {y:2, x:5}, capture: null},
-      {pos: {y:1, x:6}, capture: null},
-      {pos: {y:0, x:7}, capture: null},
-      {pos: {y:5, x:2}, capture: null},
-      {pos: {y:6, x:1}, capture: null},
-      {pos: {y:7, x:0}, capture: null},
-      {pos: {y:5, x:4}, capture: null},
-      {pos: {y:6, x:5}, capture: null},
-      {pos: {y:7, x:6}, capture: null},
-    ])
+      new Move(new Vector(2, 3)),
+      new Move(new Vector(1, 2)),
+      new Move(new Vector(0, 1)),
+      new Move(new Vector(4, 3)),
+      new Move(new Vector(5, 2)),
+      new Move(new Vector(6, 1)),
+      new Move(new Vector(7, 0)),
+      new Move(new Vector(2, 5)),
+      new Move(new Vector(1, 6)),
+      new Move(new Vector(0, 7)),
+      new Move(new Vector(4, 5)),
+      new Move(new Vector(5, 6)),
+      new Move(new Vector(6, 7))
+    ]
+    )
   }
 
   expect(movesets['0'].length).toBe(13)
@@ -115,16 +117,16 @@ test('Bishop moveset blocked by ally', () => {
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y:3, x:2}, capture: null},
-    {pos: {y:2, x:1}, capture: null},
-    {pos: {y:1, x:0}, capture: null},
-    {pos: {y:3, x:4}, capture: null},
-    {pos: {y:5, x:2}, capture: null},
-    {pos: {y:6, x:1}, capture: null},
-    {pos: {y:7, x:0}, capture: null},
-    {pos: {y:5, x:4}, capture: null},
-    {pos: {y:6, x:5}, capture: null},
-    {pos: {y:7, x:6}, capture: null},
+    new Move(new Vector(2, 3)),
+    new Move(new Vector(1, 2)),
+    new Move(new Vector(0, 1)),
+    new Move(new Vector(4, 3)),
+    new Move(new Vector(2, 5)),
+    new Move(new Vector(1, 6)),
+    new Move(new Vector(0, 7)),
+    new Move(new Vector(4, 5)),
+    new Move(new Vector(5, 6)),
+    new Move(new Vector(6, 7))
   ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
@@ -137,17 +139,17 @@ test('Bishop moveset blocked by enemy', () => {
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y:3, x:2}, capture: null},
-    {pos: {y:2, x:1}, capture: null},
-    {pos: {y:1, x:0}, capture: null},
-    {pos: {y:3, x:4}, capture: null},
-    {pos: {y:2, x:5}, capture: chessboard[2][5]},
-    {pos: {y:5, x:2}, capture: null},
-    {pos: {y:6, x:1}, capture: null},
-    {pos: {y:7, x:0}, capture: null},
-    {pos: {y:5, x:4}, capture: null},
-    {pos: {y:6, x:5}, capture: null},
-    {pos: {y:7, x:6}, capture: null},
+    new Move(new Vector(2, 3)),
+    new Move(new Vector(1, 2)),
+    new Move(new Vector(0, 1)),
+    new Move(new Vector(4, 3)),
+    new Move(new Vector(5, 2), chessboard[2][5]),
+    new Move(new Vector(2, 5)),
+    new Move(new Vector(1, 6)),
+    new Move(new Vector(0, 7)),
+    new Move(new Vector(4, 5)),
+    new Move(new Vector(5, 6)),
+    new Move(new Vector(6, 7))
   ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
@@ -160,35 +162,36 @@ test('Queen moveset', () => {
 
   const expected_movesets = {
     '0': expect.arrayContaining([
-      {pos: {y:3, x:3}, capture: null},
-      {pos: {y:2, x:3}, capture: null},
-      {pos: {y:1, x:3}, capture: null},
-      {pos: {y:0, x:3}, capture: null},
-      {pos: {y:5, x:3}, capture: null},
-      {pos: {y:6, x:3}, capture: null},
-      {pos: {y:7, x:3}, capture: null},
-      {pos: {y:4, x:2}, capture: null},
-      {pos: {y:4, x:1}, capture: null},
-      {pos: {y:4, x:0}, capture: null},
-      {pos: {y:4, x:4}, capture: null},
-      {pos: {y:4, x:5}, capture: null},
-      {pos: {y:4, x:6}, capture: null},
-      {pos: {y:4, x:7}, capture: null},
+      new Move(new Vector(3, 3)),
+      new Move(new Vector(3, 2)),
+      new Move(new Vector(3, 1)),
+      new Move(new Vector(3, 0)),
+      new Move(new Vector(3, 5)),
+      new Move(new Vector(3, 6)),
+      new Move(new Vector(3, 7)),
+      new Move(new Vector(2, 4)),
+      new Move(new Vector(1, 4)),
+      new Move(new Vector(0, 4)),
+      new Move(new Vector(4, 4)),
+      new Move(new Vector(5, 4)),
+      new Move(new Vector(6, 4)),
+      new Move(new Vector(7, 4)),
 
-      {pos: {y:3, x:2}, capture: null},
-      {pos: {y:2, x:1}, capture: null},
-      {pos: {y:1, x:0}, capture: null},
-      {pos: {y:3, x:4}, capture: null},
-      {pos: {y:2, x:5}, capture: null},
-      {pos: {y:1, x:6}, capture: null},
-      {pos: {y:0, x:7}, capture: null},
-      {pos: {y:5, x:2}, capture: null},
-      {pos: {y:6, x:1}, capture: null},
-      {pos: {y:7, x:0}, capture: null},
-      {pos: {y:5, x:4}, capture: null},
-      {pos: {y:6, x:5}, capture: null},
-      {pos: {y:7, x:6}, capture: null},
-    ])
+      new Move(new Vector(2, 3)),
+      new Move(new Vector(1, 2)),
+      new Move(new Vector(0, 1)),
+      new Move(new Vector(4, 3)),
+      new Move(new Vector(5, 2)),
+      new Move(new Vector(6, 1)),
+      new Move(new Vector(7, 0)),
+      new Move(new Vector(2, 5)),
+      new Move(new Vector(1, 6)),
+      new Move(new Vector(0, 7)),
+      new Move(new Vector(4, 5)),
+      new Move(new Vector(5, 6)),
+      new Move(new Vector(6, 7))
+    ]
+    )
   }
 
   expect(movesets['0'].length).toBe(27)
@@ -201,12 +204,12 @@ test('Knight moveset', () => {
 
   const expected_movesets = {
     '0': expect.arrayContaining([
-      {pos: {y:0, x:1}, capture: null},
-      {pos: {y:2, x:1}, capture: null},
-      {pos: {y:3, x:2}, capture: null},
-      {pos: {y:3, x:4}, capture: null},
-      {pos: {y:0, x:5}, capture: null},
-      {pos: {y:2, x:5}, capture: null},
+      new Move(new Vector(1, 0)),
+      new Move(new Vector(1, 2)),
+      new Move(new Vector(2, 3)),
+      new Move(new Vector(4, 3)),
+      new Move(new Vector(5, 0)),
+      new Move(new Vector(5, 2)),
     ])
   }
 
@@ -220,12 +223,13 @@ test('Knight moveset blocked by ally', () => {
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y:2, x:1}, capture: null},
-    {pos: {y:3, x:2}, capture: null},
-    {pos: {y:3, x:4}, capture: null},
-    {pos: {y:0, x:5}, capture: null},
-    {pos: {y:2, x:5}, capture: null},
+    new Move(new Vector(1, 2)),
+    new Move(new Vector(2, 3)),
+    new Move(new Vector(4, 3)),
+    new Move(new Vector(5, 0)),
+    new Move(new Vector(5, 2))
   ]
+  
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
   expect(movesets['0']).toEqual(expect.arrayContaining(expected_moveset))
@@ -237,13 +241,14 @@ test('Knight moveset blocked by enemy', () => {
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y:0, x:1}, capture: chessboard[0][1]},
-    {pos: {y:2, x:1}, capture: null},
-    {pos: {y:3, x:2}, capture: null},
-    {pos: {y:3, x:4}, capture: null},
-    {pos: {y:0, x:5}, capture: null},
-    {pos: {y:2, x:5}, capture: null},
-  ]
+    new Move(new Vector(1, 0), chessboard[0][1]),
+    new Move(new Vector(1, 2)),
+    new Move(new Vector(2, 3)),
+    new Move(new Vector(4, 3)),
+    new Move(new Vector(5, 0)),
+    new Move(new Vector(5, 2))
+]
+
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
   expect(movesets['0']).toEqual(expect.arrayContaining(expected_moveset))
@@ -255,8 +260,8 @@ test('Pawn first moveset player 1', () => {
 
   const expected_movesets = {
     '0': expect.arrayContaining([
-      {pos: {y:5, x:3}, capture: null},
-      {pos: {y:4, x:3}, capture: null}
+      new Move(new Vector(3, 5)),
+      new Move(new Vector(3, 4)),
     ])
   }
 
@@ -270,8 +275,8 @@ test('Pawn first moveset player 2', () => {
 
   const expected_movesets = {
     '0': expect.arrayContaining([
-      {pos: {y:2, x:3}, capture: null},
-      {pos: {y:3, x:3}, capture: null}
+      new Move(new Vector(3, 2)),
+      new Move(new Vector(3, 3)),
     ])
   }
 
@@ -285,7 +290,7 @@ test('Pawn cannot move 2 steps forward as first move when blocked by ally', () =
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y:5, x:3}, capture: null},
+    new Move(new Vector(3, 5)),
   ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
@@ -298,7 +303,7 @@ test('Pawn cannot move 2 steps forward as first move when blocked by enemy', () 
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y:5, x:3}, capture: null},
+    new Move(new Vector(3, 5)),
   ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
@@ -312,7 +317,7 @@ test('Pawn can only move 1 step forward after first move', () => {
 
   const expected_movesets = {
     '0': expect.arrayContaining([
-      {pos: {y:5, x:3}, capture: null},
+      new Move(new Vector(3, 5)),
     ])
   }
 
@@ -325,8 +330,6 @@ test('Pawn stuck when blocked by ally', () => {
   addToChessboard('rook', 5, 3, 1)
   const movesets = generate_base_movesets(chessboard, 1)
 
-  const expected_moveset = []
-
   expect(movesets['0'].length).toBe(0)
 })
 
@@ -334,8 +337,6 @@ test('Pawn stuck when blocked by enemy', () => {
   addToChessboard('pawn', 6, 3, 1)
   addToChessboard('rook', 5, 3, 2)
   const movesets = generate_base_movesets(chessboard, 1)
-
-  const expected_moveset = []
 
   expect(movesets['0'].length).toBe(0)
 })
@@ -346,9 +347,9 @@ test('Pawn can capture enemies diagonally forward', () => {
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y:5, x:3}, capture: null},
-    {pos: {y:4, x:3}, capture: null},
-    {pos: {y:5, x:2}, capture: chessboard[5][2]},
+    new Move(new Vector(3, 5)),
+    new Move(new Vector(3, 4)),
+    new Move(new Vector(2, 5), chessboard[5][2])
   ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
@@ -363,8 +364,8 @@ test('Pawn can en passant', () => {
 
   const movesets = generate_base_movesets(chessboard, 1)
   const expected_moveset = [
-    {pos: {y: 2, x: 5}, capture: null},
-    {pos: {y: 2, x: 4}, capture: chessboard[3][4]}
+    new Move(new Vector(5, 2)),
+    new Move(new Vector(4, 2), chessboard[3][4]),
   ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
@@ -379,11 +380,11 @@ test('King moveset', () => {
 
   const expected_movesets = {
     '0': expect.arrayContaining([
-      {pos: {y: y-1, x: x-1}, capture: null},
-      {pos: {y: y-1, x: x}, capture: null},
-      {pos: {y: y-1, x: x+1}, capture: null},
-      {pos: {y: y, x: x+1}, capture: null},
-      {pos: {y: y, x: x-1}, capture: null},
+      new Move(new Vector(x-1, y-1)),
+      new Move(new Vector(x, y-1)),
+      new Move(new Vector(x+1, y-1)),
+      new Move(new Vector(x+1, y)),
+      new Move(new Vector(x-1, y)),
     ])
   }
 
@@ -399,10 +400,10 @@ test('King moveset blocked by ally', () => {
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y: y-1, x: x-1}, capture: null},
-    {pos: {y: y-1, x: x}, capture: null},
-    {pos: {y: y-1, x: x+1}, capture: null},
-    {pos: {y: y, x: x+1}, capture: null},
+    new Move(new Vector(x-1, y-1)),
+    new Move(new Vector(x, y-1)),
+    new Move(new Vector(x+1, y-1)),
+    new Move(new Vector(x+1, y)),
   ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
@@ -417,11 +418,11 @@ test('King moveset blocked by enemy', () => {
   const movesets = generate_base_movesets(chessboard, 1)
 
   const expected_moveset = [
-    {pos: {y: y-1, x: x-1}, capture: null},
-    {pos: {y: y-1, x: x}, capture: null},
-    {pos: {y: y-1, x: x+1}, capture: null},
-    {pos: {y: y, x: x+1}, capture: null},
-    {pos: {y: y, x: x-1}, capture: chessboard[7][2]},
+    new Move(new Vector(x-1, y-1)),
+    new Move(new Vector(x, y-1)),
+    new Move(new Vector(x+1, y-1)),
+    new Move(new Vector(x+1, y)),
+    new Move(new Vector(x-1, y), chessboard[7][2]),
   ]
 
   expect(movesets['0'].length).toBe(expected_moveset.length)
