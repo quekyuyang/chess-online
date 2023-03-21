@@ -1,6 +1,7 @@
 const MoveManager = require('../chess/MoveManager')
 const Chessboard = require('../chess/Chessboard')
-const Vector = require('../chess/Position');
+const Vector = require('../chess/Position')
+const Move = require('../chess/Move')
 
 
 test('Attempt to move non-existent chess piece should fail', () => {
@@ -32,14 +33,8 @@ test('Attempt to move valid chess piece should succeed', () => {
 
 describe('Castling white side', () => {
     let chessboard = new Chessboard()
-    const castlingMove1 = {
-        pos: {x: 2, y: 7},
-        capture: null
-    }
-    const castlingMove2 = {
-        pos: {x: 6, y: 7},
-        capture: null
-    }
+    const castlingMove1 = new Move(new Vector(2, 7))
+    const castlingMove2 = new Move(new Vector(6, 7))
     
     const wking_id = 'wking'
     const wrook_id1 = 'wrook1'
@@ -128,14 +123,8 @@ describe('Castling white side', () => {
 
 describe('Castling black side', () => {
     let chessboard = new Chessboard()
-    const castlingMove1 = {
-        pos: {x: 2, y: 0},
-        capture: null
-    }
-    const castlingMove2 = {
-        pos: {x: 6, y: 0},
-        capture: null
-    }
+    const castlingMove1 = new Move(new Vector(2, 0))
+    const castlingMove2 = new Move(new Vector(6, 0))
 
     const bking_id = 'bking'
     const brook_id1 = 'brook1'
