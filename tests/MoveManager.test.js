@@ -33,8 +33,6 @@ test('Attempt to move valid chess piece should succeed', () => {
 
 describe('Castling white side', () => {
     let chessboard = new Chessboard()
-    const castlingMove1 = new Move(new Vector(2, 7))
-    const castlingMove2 = new Move(new Vector(6, 7))
     
     const wking_id = 'wking'
     const wrook_id1 = 'wrook1'
@@ -50,9 +48,13 @@ describe('Castling white side', () => {
     test('Castling move is possible', () => {
         const moveManager = new MoveManager(chessboard)
         const moves = moveManager.compute_moves(1)
-        
-        expect(moves[wking_id]).toContainEqual(castlingMove1)
-        expect(moves[wking_id]).toContainEqual(castlingMove2)
+
+        const castlingMove1 = moves[wking_id].find(move => move.pos.x == 2)
+        const castlingMove2 = moves[wking_id].find(move => move.pos.x == 6)
+        expect(castlingMove1.castlingPartner.id).toBe(wrook_id1)
+        expect(castlingMove1.castlingPartner.move).toEqual(new Move(new Vector(3, 7)))
+        expect(castlingMove2.castlingPartner.id).toBe(wrook_id2)
+        expect(castlingMove2.castlingPartner.move).toEqual(new Move(new Vector(5, 7)))
     })
 
     test('No castling if rook has moved before', () => {
@@ -61,7 +63,9 @@ describe('Castling white side', () => {
         moveManager.move_piece(wrook_id1, new Vector(0, 7), 1)
         const moves = moveManager.compute_moves(1)
 
-        expect(moves[wking_id]).not.toContainEqual(castlingMove1)
+        expect(moves[wking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(2, 7)
+        }))
     })
     
     test('No castling if king has moved before', () => {
@@ -70,7 +74,12 @@ describe('Castling white side', () => {
         moveManager.move_piece(wking_id, new Vector(4, 7), 1)
         const moves = moveManager.compute_moves(1)
 
-        expect(moves[wking_id]).not.toContainEqual(castlingMove1)
+        expect(moves[wking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(2, 7)
+        }))
+        expect(moves[wking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(6, 7)
+        }))
     })
     
     test('No castling if something between king and rook', () => {
@@ -78,7 +87,9 @@ describe('Castling white side', () => {
         const moveManager = new MoveManager(chessboard)
         const moves = moveManager.compute_moves(1)
 
-        expect(moves[wking_id]).not.toContainEqual(castlingMove1)
+        expect(moves[wking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(2, 7)
+        }))
     })
     
     test('No castling if king is under check', () => {
@@ -86,7 +97,12 @@ describe('Castling white side', () => {
         const moveManager = new MoveManager(chessboard)
         const moves = moveManager.compute_moves(1)
 
-        expect(moves[wking_id]).not.toContainEqual(castlingMove1)
+        expect(moves[wking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(2, 7)
+        }))
+        expect(moves[wking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(6, 7)
+        }))
     })
 
     test('Execute castling move with rook1', () => {
@@ -123,8 +139,6 @@ describe('Castling white side', () => {
 
 describe('Castling black side', () => {
     let chessboard = new Chessboard()
-    const castlingMove1 = new Move(new Vector(2, 0))
-    const castlingMove2 = new Move(new Vector(6, 0))
 
     const bking_id = 'bking'
     const brook_id1 = 'brook1'
@@ -141,8 +155,12 @@ describe('Castling black side', () => {
         const moveManager = new MoveManager(chessboard)
         const moves = moveManager.compute_moves(2)
         
-        expect(moves[bking_id]).toContainEqual(castlingMove1)
-        expect(moves[bking_id]).toContainEqual(castlingMove2)
+        const castlingMove1 = moves[bking_id].find(move => move.pos.x == 2)
+        const castlingMove2 = moves[bking_id].find(move => move.pos.x == 6)
+        expect(castlingMove1.castlingPartner.id).toBe(brook_id1)
+        expect(castlingMove1.castlingPartner.move).toEqual(new Move(new Vector(3, 0)))
+        expect(castlingMove2.castlingPartner.id).toBe(brook_id2)
+        expect(castlingMove2.castlingPartner.move).toEqual(new Move(new Vector(5, 0)))
     })
 
     test('No castling if rook has moved before', () => {
@@ -151,7 +169,9 @@ describe('Castling black side', () => {
         moveManager.move_piece(brook_id1, new Vector(0, 0), 2)
         const moves = moveManager.compute_moves(2)
 
-        expect(moves[bking_id]).not.toContainEqual(castlingMove1)
+        expect(moves[bking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(2, 0)
+        }))
     })
     
     test('No castling if king has moved before', () => {
@@ -160,7 +180,12 @@ describe('Castling black side', () => {
         moveManager.move_piece(bking_id, new Vector(4, 0), 2)
         const moves = moveManager.compute_moves(2)
 
-        expect(moves[bking_id]).not.toContainEqual(castlingMove1)
+        expect(moves[bking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(2, 0)
+        }))
+        expect(moves[bking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(6, 0)
+        }))
     })
     
     test('No castling if something between king and rook', () => {
@@ -168,7 +193,9 @@ describe('Castling black side', () => {
         const moveManager = new MoveManager(chessboard)
         const moves = moveManager.compute_moves(2)
 
-        expect(moves[bking_id]).not.toContainEqual(castlingMove1)
+        expect(moves[bking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(2, 0)
+        }))
     })
     
     test('No castling if king is under check', () => {
@@ -176,7 +203,9 @@ describe('Castling black side', () => {
         const moveManager = new MoveManager(chessboard)
         const moves = moveManager.compute_moves(2)
 
-        expect(moves[bking_id]).not.toContainEqual(castlingMove1)
+        expect(moves[bking_id]).not.toContainEqual(expect.objectContaining({
+            pos: new Vector(2, 0)
+        }))
     })
     
     test('Execute castling move with rook1', () => {
