@@ -25,7 +25,7 @@ describe('', () => {
     gameState = {
       chesspieces1: [{id: 'id', _pos: {x: 0, y: 0}}],
       chesspieces2: [],
-      moves: "moves1"
+      moves: {id: []}
     }
     
     gameState2 = {
@@ -223,7 +223,9 @@ describe("", () => {
     }
     const newMatchData = {
       ...gameState,
-      moves: "moves1",
+      moves: {
+        id1: [{pos: {x: 1, y: 1}}]
+      },
       first_move: true,
       color: 1
     }
@@ -274,5 +276,84 @@ describe("", () => {
 
     expect(update).nthCalledWith(2, movePieceStateExpect.chesspieces1.concat(movePieceStateExpect.chesspieces2), movePieceStateExpect.graveyard)
     expect(update).nthCalledWith(4, waitForUpdateData.chesspieces1.concat(waitForUpdateData.chesspieces2), waitForUpdateData.graveyard)
+  })
+})
+
+
+describe("", () => {
+  let game
+  let gameState
+  let gameState2
+  let gameState3
+  let waitForUpdateData
+
+  beforeEach(async () => {
+    update.mockClear()
+
+    // Mock newMatch
+    gameState = {
+      chesspieces1: [
+        {id: 'wking', _pos: {x: 4, y: 7}},
+        {id: 'wrook1', _pos: {x: 0, y: 7}}
+      ],
+      chesspieces2: [],
+      graveyard: []
+    }
+    const newMatchData = {
+      ...gameState,
+      moves: {
+        wking: [{pos: {x: 2, y: 7}, castlingPartner: {id: 'wrook1', move: {pos: {x: 3, y: 7}}}}]
+      },
+      first_move: true,
+      color: 1
+    }
+    newMatch.mockResolvedValue(newMatchData)
+    game = new Game()
+    await game.init()
+
+    // Mock send_move_to_server
+    gameState2 = {
+      chesspieces1: [{id: 'id1', _pos: {x: 2, y: 7}}],
+      chesspieces2: [],
+      graveyard: [],
+    }
+    const movePieceData = {
+      ...gameState2,
+      success: true
+    }
+    send_move_to_server.mockResolvedValue(movePieceData)
+
+    gameState3 = {
+      chesspieces1: [{id: 'id1', _pos: {x: 2, y: 7}}],
+      chesspieces2: [],
+      graveyard: []
+    }
+
+    // Mock getGameState
+    waitForUpdateData = {
+      ...gameState3,
+      moves: "moves2",
+    }
+    getGameState.mockResolvedValue(waitForUpdateData)
+  })
+
+  test("Render castling immediately after moving piece", async () => {
+    const king = gameState.chesspieces1[0]
+    const rook = gameState.chesspieces1[1]
+    await game.move_piece(king.id, 2, 7)
+
+    const movePieceStateExpect = {
+      chesspieces1: [king, rook],
+      chesspieces2: [],
+      graveyard: []
+    }
+
+    const chesspiecesExpect = [
+      {id: 'wking', _pos: {x: 2, y: 7}},
+      {id: 'wrook1', _pos: {x:3, y: 7}}
+    ]
+
+    expect(update).nthCalledWith(2, chesspiecesExpect, [])
+    //expect(update).nthCalledWith(4, waitForUpdateData.chesspieces1.concat(waitForUpdateData.chesspieces2), waitForUpdateData.graveyard)
   })
 })

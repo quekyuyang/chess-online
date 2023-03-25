@@ -28,6 +28,12 @@ class Game {
     const chesspiece = chesspieces.find(chesspiece => chesspiece.id == id)
     chesspiece._pos.x = x
     chesspiece._pos.y = y
+    const move = this.state.moves[id].find(move => move.pos.x == x && move.pos.y == y)
+    if (move && move.castlingPartner) {
+      const castlingPartnerPiece = chesspieces.find(chesspiece => chesspiece.id == move.castlingPartner.id)
+      castlingPartnerPiece._pos.x = move.castlingPartner.move.pos.x
+      castlingPartnerPiece._pos.y = move.castlingPartner.move.pos.y
+    }
     updateView(this.state)
 
     if (this.color == 2) {
