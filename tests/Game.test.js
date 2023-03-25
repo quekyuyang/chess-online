@@ -263,8 +263,8 @@ describe("", () => {
   })
 
   test("Render update immediately after moving piece", async () => {
-    const targetChesspiece = {id: 'id1', _pos: {x: 1, y: 1}}
-    await game.move_piece(targetChesspiece.id, targetChesspiece._pos.x, targetChesspiece._pos.y)
+    const targetChesspiece = gameState.chesspieces1[0]
+    await game.move_piece(targetChesspiece.id, 1, 1)
 
     const movePieceStateExpect = {
       chesspieces1: [targetChesspiece],
