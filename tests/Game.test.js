@@ -47,8 +47,6 @@ describe('', () => {
     }
     
     movePieceGameState = {
-      chesspieces1: [],
-      chesspieces2: [],
       success: true
     }
   })
@@ -234,13 +232,7 @@ describe("", () => {
     await game.init()
 
     // Mock send_move_to_server
-    gameState2 = {
-      chesspieces1: [{id: 'id1', _pos: {x: 1, y: 1}}],
-      chesspieces2: [],
-      graveyard: [],
-    }
     const movePieceData = {
-      ...gameState2,
       success: true
     }
     send_move_to_server.mockResolvedValue(movePieceData)
@@ -275,7 +267,7 @@ describe("", () => {
     }
 
     expect(update).nthCalledWith(2, movePieceStateExpect.chesspieces1.concat(movePieceStateExpect.chesspieces2), movePieceStateExpect.graveyard)
-    expect(update).nthCalledWith(4, waitForUpdateData.chesspieces1.concat(waitForUpdateData.chesspieces2), waitForUpdateData.graveyard)
+    expect(update).nthCalledWith(3, waitForUpdateData.chesspieces1.concat(waitForUpdateData.chesspieces2), waitForUpdateData.graveyard)
   })
 })
 
@@ -312,13 +304,7 @@ describe("", () => {
     await game.init()
 
     // Mock send_move_to_server
-    gameState2 = {
-      chesspieces1: [{id: 'id1', _pos: {x: 2, y: 7}}],
-      chesspieces2: [],
-      graveyard: [],
-    }
     const movePieceData = {
-      ...gameState2,
       success: true
     }
     send_move_to_server.mockResolvedValue(movePieceData)

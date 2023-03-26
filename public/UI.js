@@ -13,8 +13,6 @@ function updateView(gameState) {
 
 
 function updateViewPlayerMove(gameState) {
-  updateView(gameState)
-
   if (gameState.checkmate) {
     setMessage('You win')
   }
