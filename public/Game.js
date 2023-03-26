@@ -28,7 +28,12 @@ class Game {
     const chesspiece = chesspieces.find(chesspiece => chesspiece.id == id)
     chesspiece._pos.x = x
     chesspiece._pos.y = y
+    
     const move = this.state.moves[id].find(move => move.pos.x == x && move.pos.y == y)
+    if (move && move.capture) {
+      this.state.graveyard.push(move.capture)
+    }
+
     if (move && move.castlingPartner) {
       const castlingPartnerPiece = chesspieces.find(chesspiece => chesspiece.id == move.castlingPartner.id)
       castlingPartnerPiece._pos.x = move.castlingPartner.move.pos.x
