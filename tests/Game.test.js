@@ -14,8 +14,7 @@ jest.mock("../public/chessboardFlip.js")
 describe('', () => {
   let gameState
   let gameState2
-  let newGameStatePlayer1
-  let newGameStatePlayer2
+  let newGameState
   let movePieceGameState
 
   beforeEach(() => {
@@ -34,18 +33,12 @@ describe('', () => {
       moves: "moves2"
     }
     
-    newGameStatePlayer1 = {
+    newGameState = {
       ...gameState,
       first_move: true,
       color: 1
     }
-    
-    newGameStatePlayer2 = {
-      ...gameState,
-      first_move: false,
-      color: 2
-    }
-    
+
     movePieceGameState = {
       success: true
     }
@@ -53,17 +46,23 @@ describe('', () => {
 
 
   test("Start game with first move", async () => {
-    newMatch.mockResolvedValue(newGameStatePlayer1)
+    newMatch.mockResolvedValue(newGameState)
     const game = new Game()
     await game.init()
 
     expect(SpriteManager.mock.instances[0].enable_move.mock.calls.length).toBe(1)
     expect(SpriteManager.mock.instances[0].enable_move.mock.calls[0][0])
-    .toBe(newGameStatePlayer1.moves)
+    .toBe(newGameState.moves)
   })
 
 
   test("Start game without first move", async () => {
+    const newGameStatePlayer2 = {
+      ...gameState,
+      first_move: false,
+      color: 2
+    }
+
     newMatch.mockResolvedValue(newGameStatePlayer2)
     getGameState.mockResolvedValue(gameState)
 
@@ -76,7 +75,7 @@ describe('', () => {
 
 
   test("Move piece then wait for opponent", async () => {
-    newMatch.mockResolvedValue(newGameStatePlayer1)
+    newMatch.mockResolvedValue(newGameState)
     const game = new Game()
     await game.init()
 
@@ -91,7 +90,7 @@ describe('', () => {
 
 
   test("Display 'You win' if opponent checkmate after making move", async () => {
-    newMatch.mockResolvedValue(newGameStatePlayer1)
+    newMatch.mockResolvedValue(newGameState)
     const game = new Game()
     await game.init()
 
@@ -108,7 +107,7 @@ describe('', () => {
 
 
   test("Display 'Stalemate' if stalemate after making move", async () => {
-    newMatch.mockResolvedValue(newGameStatePlayer1)
+    newMatch.mockResolvedValue(newGameState)
     const game = new Game()
     await game.init()
 
@@ -125,7 +124,7 @@ describe('', () => {
 
 
   test("Clear display message if neither checkmate nor stalemate after making move", async () => {
-    newMatch.mockResolvedValue(newGameStatePlayer1)
+    newMatch.mockResolvedValue(newGameState)
     const game = new Game()
     await game.init()
 
@@ -139,66 +138,70 @@ describe('', () => {
 
 
   test("Display 'Check' if checked after opponent move", async () => {
-    newMatch.mockResolvedValue(newGameStatePlayer2)
-
-    const newGameStateCheck = {
+    newMatch.mockResolvedValue(newGameState)
+    send_move_to_server.mockResolvedValue(movePieceGameState)
+    const gameStateCheck = {
       ...gameState,
       check: true
     }
-    getGameState.mockResolvedValue(newGameStateCheck)
+    getGameState.mockResolvedValue(gameStateCheck)
 
     const game = new Game()
     await game.init()
+    await game.move_piece('id', 1, 1)
 
-    expect(setMessage.mock.calls.length).toBe(1)
-    expect(setMessage.mock.calls[0][0]).toBe('Check')
+    expect(setMessage).toBeCalledTimes(2)
+    expect(setMessage).nthCalledWith(2, 'Check')
   })
 
 
   test("Display 'Checkmate' if checkmate after opponent move", async () => {
-    newMatch.mockResolvedValue(newGameStatePlayer2)
-
-    const newGameStateCheckmate = {
+    newMatch.mockResolvedValue(newGameState)
+    send_move_to_server.mockResolvedValue(movePieceGameState)
+    const gameStateCheckmate = {
       ...gameState,
       checkmate: true
     }
-    getGameState.mockResolvedValue(newGameStateCheckmate)
+    getGameState.mockResolvedValue(gameStateCheckmate)
 
     const game = new Game()
     await game.init()
+    await game.move_piece('id', 1, 1)
 
-    expect(setMessage.mock.calls.length).toBe(1)
-    expect(setMessage.mock.calls[0][0]).toBe('Checkmate')
+    expect(setMessage).toBeCalledTimes(2)
+    expect(setMessage).nthCalledWith(2, 'Checkmate')
   })
 
 
   test("Display 'Stalemate' if stalemate after opponent move", async () => {
-    newMatch.mockResolvedValue(newGameStatePlayer2)
-
-    const newGameStateStalemate = {
+    newMatch.mockResolvedValue(newGameState)
+    send_move_to_server.mockResolvedValue(movePieceGameState)
+    const gameStateStalemate = {
       ...gameState,
       stalemate: true
     }
-    getGameState.mockResolvedValue(newGameStateStalemate)
+    getGameState.mockResolvedValue(gameStateStalemate)
 
     const game = new Game()
     await game.init()
+    await game.move_piece('id', 1, 1)
 
-    expect(setMessage.mock.calls.length).toBe(1)
-    expect(setMessage.mock.calls[0][0]).toBe('Stalemate')
+    expect(setMessage).toBeCalledTimes(2)
+    expect(setMessage).nthCalledWith(2, 'Stalemate')
   })
 
 
   test("Clear display message if not check or checkmate or stalemate after opponent move", async () => {
-    newMatch.mockResolvedValue(newGameStatePlayer2)
-
+    newMatch.mockResolvedValue(newGameState)
+    send_move_to_server.mockResolvedValue(movePieceGameState)
     getGameState.mockResolvedValue(gameState)
 
     const game = new Game()
     await game.init()
+    await game.move_piece('id', 1, 1)
 
-    expect(setMessage.mock.calls.length).toBe(1)
-    expect(setMessage.mock.calls[0][0]).toBe('')
+    expect(setMessage).toBeCalledTimes(2)
+    expect(setMessage).nthCalledWith(2, '')
   })
 })
 
@@ -207,23 +210,26 @@ describe("", () => {
   let game
   let gameState
   let gameState2
-  let gameState3
-  let waitForUpdateData
+
+  const id = 'id1'
+  const dest = {x: 4, y: 4}
 
   beforeEach(async () => {
     update.mockClear()
 
+    
     // Mock newMatch
     gameState = {
-      chesspieces1: [{id: 'id1', _pos: {x: 4, y: 4}}],
+      chesspieces1: [{id: id, _pos: dest}],
       chesspieces2: [],
       graveyard: [],
+      moves: {
+        [id]: [{pos: dest}]
+      }
     }
     const newMatchData = {
       ...gameState,
-      moves: {
-        id1: [{pos: {x: 1, y: 1}}]
-      },
+      
       first_move: true,
       color: 1
     }
@@ -231,24 +237,22 @@ describe("", () => {
     game = new Game()
     await game.init()
 
+
     // Mock send_move_to_server
     const movePieceData = {
       success: true
     }
     send_move_to_server.mockResolvedValue(movePieceData)
 
-    gameState3 = {
-      chesspieces1: [{id: 'id1', _pos: {x: 1, y: 1}}],
-      chesspieces2: [],
-      graveyard: []
-    }
 
     // Mock getGameState
-    waitForUpdateData = {
-      ...gameState3,
+    gameState2 = {
+      chesspieces1: [{id: id, _pos: dest}],
+      chesspieces2: [],
+      graveyard: [],
       moves: "moves2",
     }
-    getGameState.mockResolvedValue(waitForUpdateData)
+    getGameState.mockResolvedValue(gameState2)
   })
 
 
@@ -258,7 +262,7 @@ describe("", () => {
 
   test("Render update immediately after moving piece", async () => {
     const targetChesspiece = gameState.chesspieces1[0]
-    await game.move_piece(targetChesspiece.id, 1, 1)
+    await game.move_piece(targetChesspiece.id, dest.x, dest.y)
 
     const movePieceStateExpect = {
       chesspieces1: [targetChesspiece],
@@ -267,7 +271,7 @@ describe("", () => {
     }
 
     expect(update).nthCalledWith(2, movePieceStateExpect.chesspieces1.concat(movePieceStateExpect.chesspieces2), movePieceStateExpect.graveyard)
-    expect(update).nthCalledWith(3, waitForUpdateData.chesspieces1.concat(waitForUpdateData.chesspieces2), waitForUpdateData.graveyard)
+    expect(update).nthCalledWith(3, gameState2.chesspieces1.concat(gameState2.chesspieces2), gameState2.graveyard)
   })
 })
 
@@ -276,26 +280,30 @@ describe("", () => {
   let game
   let gameState
   let gameState2
-  let gameState3
-  let waitForUpdateData
+
+  const kingID = 'wking'
+  const rookID = 'wrook1'
+  const kingDest = {x: 2, y: 7}
+  const rookDest = {x: 3, y: 7}
 
   beforeEach(async () => {
     update.mockClear()
 
+
     // Mock newMatch
     gameState = {
       chesspieces1: [
-        {id: 'wking', _pos: {x: 4, y: 7}},
-        {id: 'wrook1', _pos: {x: 0, y: 7}}
+        {id: kingID, _pos: {x: 4, y: 7}},
+        {id: rookID, _pos: {x: 0, y: 7}}
       ],
       chesspieces2: [],
-      graveyard: []
+      graveyard: [],
+      moves: {
+        [kingID]: [{pos: kingDest, castlingPartner: {id: rookID, move: {pos: rookDest}}}]
+      },
     }
     const newMatchData = {
       ...gameState,
-      moves: {
-        wking: [{pos: {x: 2, y: 7}, castlingPartner: {id: 'wrook1', move: {pos: {x: 3, y: 7}}}}]
-      },
       first_move: true,
       color: 1
     }
@@ -303,40 +311,32 @@ describe("", () => {
     game = new Game()
     await game.init()
 
+
     // Mock send_move_to_server
     const movePieceData = {
       success: true
     }
     send_move_to_server.mockResolvedValue(movePieceData)
 
-    gameState3 = {
-      chesspieces1: [{id: 'id1', _pos: {x: 2, y: 7}}],
-      chesspieces2: [],
-      graveyard: []
-    }
 
     // Mock getGameState
-    waitForUpdateData = {
-      ...gameState3,
+    gameState2 = {
+      chesspieces1: [{id: kingID, _pos: kingDest}],
+      chesspieces2: [],
+      graveyard: [],
       moves: "moves2",
     }
-    getGameState.mockResolvedValue(waitForUpdateData)
+    getGameState.mockResolvedValue(gameState2)
   })
 
   test("Render castling immediately after moving piece", async () => {
     const king = gameState.chesspieces1[0]
     const rook = gameState.chesspieces1[1]
-    await game.move_piece(king.id, 2, 7)
-
-    const movePieceStateExpect = {
-      chesspieces1: [king, rook],
-      chesspieces2: [],
-      graveyard: []
-    }
+    await game.move_piece(king.id, kingDest.x, kingDest.y)
 
     const chesspiecesExpect = [
-      {id: 'wking', _pos: {x: 2, y: 7}},
-      {id: 'wrook1', _pos: {x:3, y: 7}}
+      {id: kingID, _pos: kingDest},
+      {id: rookID, _pos: rookDest}
     ]
 
     expect(update).nthCalledWith(2, chesspiecesExpect, [])
