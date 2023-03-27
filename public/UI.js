@@ -1,34 +1,37 @@
 import {init, setNames, update, setMessage} from "./render.js"
+import {SpriteManager} from "./SpriteManager.js"
 
 
-function initUpdateView(gameState) {
-  setNames(gameState.playerName, gameState.opponentName)
-  updateView(gameState)
-}
-
-
-function updateView(gameState) {
-  update(gameState.chesspieces1.concat(gameState.chesspieces2), gameState.graveyard)
-}
-
-
-function updateViewPlayerMove(gameState) {
-  if (gameState.checkmate) {
-    setMessage('You win')
+class UI {
+  constructor(gameData, move_piece) {
+    const sprites = init(gameData.chesspieces1.concat(gameData.chesspieces2));
+    setNames(gameData.playerName, gameData.opponentName)
+    this.updateBoard(gameData)
+    this.sprite_manager = new SpriteManager(sprites, move_piece);
   }
-  else if (gameState.stalemate) {
-    setMessage('Stalemate')
+
+  updateBoard(gameState) {
+    update(gameState.chesspieces1.concat(gameState.chesspieces2), gameState.graveyard)
   }
-  else {
-    setMessage('')
+  
+  updateViewPlayerMove(gameState) {
+    if (gameState.checkmate) {
+      setMessage('You win')
+    }
+    else if (gameState.stalemate) {
+      setMessage('Stalemate')
+    }
+    else {
+      setMessage('')
+    }
+
+    this.disableMove()
   }
-}
 
-
-function updateViewOpponentMove(gameState) {
-  updateView(gameState)
-
-  if (gameState.check) {
+  updateViewOpponentMove(gameState) {
+    this.updateBoard(gameState)
+  
+    if (gameState.check) {
       setMessage('Check')
     }
     else if (gameState.checkmate) {
@@ -40,7 +43,18 @@ function updateViewOpponentMove(gameState) {
     else {
       setMessage('')
     }
+
+    this.enableMove(gameState.moves)
+  }
+
+  enableMove(moves) {
+    this.sprite_manager.enable_move(moves)
+  }
+
+  disableMove() {
+    this.sprite_manager.disable_move()
+  }
 }
 
 
-export {initUpdateView, updateView, updateViewPlayerMove, updateViewOpponentMove}
+export {UI}

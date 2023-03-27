@@ -1,6 +1,4 @@
-import {init} from "./render.js"
-import {initUpdateView, updateView, updateViewPlayerMove, updateViewOpponentMove} from "./UI.js"
-import {SpriteManager} from "./SpriteManager.js"
+import {UI} from "./UI.js"
 import {newMatch, send_move_to_server, getGameState} from "./server_comms.js"
 import {flipPositions} from "./chessboardFlip.js"
 import {GameState} from "./GameState.js"
@@ -9,16 +7,14 @@ import {GameState} from "./GameState.js"
 class Game {
   async init() {
     await newMatch()
-    .then((gameState) => {
-      this.color = gameState.color;
-      if (this.color == 2) {flipPositions(gameState)}
+    .then((gameData) => {
+      this.color = gameData.color;
+      if (this.color == 2) {flipPositions(gameData)}
 
-      this.state = new GameState(gameState)
-      const sprites = init(gameState.chesspieces1.concat(gameState.chesspieces2));
-      initUpdateView(gameState)
-      this.sprite_manager = new SpriteManager(sprites, this.move_piece.bind(this));
-      if (gameState.first_move)
-        this.sprite_manager.enable_move(gameState.moves);
+      this.state = new GameState(gameData)
+      this.UI = new UI(gameData, this.move_piece.bind(this))
+      if (gameData.first_move)
+        this.UI.enableMove(gameData.moves);
       else
         this.wait_for_update();
     });
@@ -26,20 +22,19 @@ class Game {
 
   async move_piece(id, x, y) {
     this.state.movePiece(id, x, y)
-    updateView(this.state)
+    this.UI.updateBoard(this.state)
 
     if (this.color == 2) {
       y = 7-y
       x = 7-x
     }
     await send_move_to_server(id, x, y)
-    .then((gameState) => {
-      if (gameState.success) {
-        if (this.color == 2) {flipPositions(gameState)}
+    .then((gameData) => {
+      if (gameData.success) {
+        if (this.color == 2) {flipPositions(gameData)}
 
-        updateViewPlayerMove(gameState)
-        this.sprite_manager.disable_move()
-        if (!gameState.checkmate && !gameState.stalemate) {
+        this.UI.updateViewPlayerMove(gameData)
+        if (!gameData.checkmate && !gameData.stalemate) {
           this.wait_for_update()
         }
       }
@@ -48,12 +43,11 @@ class Game {
 
   wait_for_update() {
     return getGameState()
-    .then((gameState) => {
-      if (this.color == 2) {flipPositions(gameState)}
+    .then((gameData) => {
+      if (this.color == 2) {flipPositions(gameData)}
 
-      this.state = new GameState(gameState)
-      updateViewOpponentMove(gameState)
-      this.sprite_manager.enable_move(gameState.moves);
+      this.state = new GameState(gameData)
+      this.UI.updateViewOpponentMove(gameData)
     });
   }
 }
