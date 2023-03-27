@@ -3,6 +3,7 @@ import {initUpdateView, updateView, updateViewPlayerMove, updateViewOpponentMove
 import {SpriteManager} from "./SpriteManager.js"
 import {newMatch, send_move_to_server, getGameState} from "./server_comms.js"
 import {flipPositions} from "./chessboardFlip.js"
+import {GameState} from "./GameState.js"
 
 
 class Game {
@@ -12,7 +13,7 @@ class Game {
       this.color = gameState.color;
       if (this.color == 2) {flipPositions(gameState)}
 
-      this.state = gameState
+      this.state = new GameState(gameState)
       const sprites = init(gameState.chesspieces1.concat(gameState.chesspieces2));
       initUpdateView(gameState)
       this.sprite_manager = new SpriteManager(sprites, this.move_piece.bind(this));
@@ -24,21 +25,7 @@ class Game {
   }
 
   async move_piece(id, x, y) {
-    const chesspieces = this.color == 1 ? this.state.chesspieces1 : this.state.chesspieces2
-    const chesspiece = chesspieces.find(chesspiece => chesspiece.id == id)
-    chesspiece._pos.x = x
-    chesspiece._pos.y = y
-    
-    const move = this.state.moves[id].find(move => move.pos.x == x && move.pos.y == y)
-    if (move && move.capture) {
-      this.state.graveyard.push(move.capture)
-    }
-
-    if (move && move.castlingPartner) {
-      const castlingPartnerPiece = chesspieces.find(chesspiece => chesspiece.id == move.castlingPartner.id)
-      castlingPartnerPiece._pos.x = move.castlingPartner.move.pos.x
-      castlingPartnerPiece._pos.y = move.castlingPartner.move.pos.y
-    }
+    this.state.movePiece(id, x, y)
     updateView(this.state)
 
     if (this.color == 2) {
@@ -50,7 +37,6 @@ class Game {
       if (gameState.success) {
         if (this.color == 2) {flipPositions(gameState)}
 
-        this.state = gameState
         updateViewPlayerMove(gameState)
         this.sprite_manager.disable_move()
         if (!gameState.checkmate && !gameState.stalemate) {
@@ -65,7 +51,7 @@ class Game {
     .then((gameState) => {
       if (this.color == 2) {flipPositions(gameState)}
 
-      this.state = gameState
+      this.state = new GameState(gameState)
       updateViewOpponentMove(gameState)
       this.sprite_manager.enable_move(gameState.moves);
     });
