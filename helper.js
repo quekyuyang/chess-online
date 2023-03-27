@@ -30,18 +30,12 @@ function newMatch(req1, req2, database_interface) {
       chesspieces1: game.chesspieces1,
       chesspieces2: game.chesspieces2,
       graveyard: game.graveyard,
-      moves: game.moves,
       player_ids: [req1.session.id, req2.session.id]
     }
 
-    // Determine whether player of current request gets first move
-    const first_move_current = req2.session.id == matchInfo.player_ids[0]
-    // Determine whether player of waiting request gets first move
-    const first_move_waiting = req1.session.id == matchInfo.player_ids[0]
-
     const res1 = {
       ...matchInfo,
-      first_move: first_move_waiting,
+      moves: game.moves,
       color: 1,
       playerName: req1.session.username ? req1.session.username : 'anonymous',
       opponentName: req2.session.username ? req2.session.username : 'anonymous'
@@ -49,7 +43,7 @@ function newMatch(req1, req2, database_interface) {
 
     const res2 = {
       ...matchInfo,
-        first_move: first_move_current,
+        moves: {},
         color: 2,
         playerName: req2.session.username ? req2.session.username : 'anonymous',
         opponentName: req1.session.username ? req1.session.username : 'anonymous'

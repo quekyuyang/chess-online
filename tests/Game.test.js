@@ -30,7 +30,7 @@ describe('', () => {
     gameState2 = {
       chesspieces1: [],
       chesspieces2: [],
-      moves: "moves2"
+      moves: {}
     }
     
     newGameState = {
@@ -58,8 +58,7 @@ describe('', () => {
 
   test("Start game without first move", async () => {
     const newGameStatePlayer2 = {
-      ...gameState,
-      first_move: false,
+      ...gameState2,
       color: 2
     }
 

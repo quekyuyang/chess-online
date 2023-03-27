@@ -13,7 +13,7 @@ class Game {
 
       this.state = new GameState(gameData)
       this.UI = new UI(gameData, this.move_piece.bind(this))
-      if (gameData.first_move)
+      if (Object.keys(gameData.moves).length > 0)
         this.UI.enableMove(gameData.moves);
       else
         this.wait_for_update();
