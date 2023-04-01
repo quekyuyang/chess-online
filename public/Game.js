@@ -31,8 +31,6 @@ class Game {
     await send_move_to_server(id, x, y)
     .then((gameData) => {
       if (gameData.success) {
-        if (this.color == 2) {flipPositions(gameData)}
-
         this.UI.updateViewPlayerMove(gameData)
         if (!gameData.checkmate && !gameData.stalemate) {
           this.wait_for_update()
