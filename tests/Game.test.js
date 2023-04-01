@@ -342,3 +342,71 @@ describe("", () => {
     //expect(update).nthCalledWith(4, waitForUpdateData.chesspieces1.concat(waitForUpdateData.chesspieces2), waitForUpdateData.graveyard)
   })
 })
+
+
+describe("", () => {
+  let game
+  let gameState
+  let gameState2
+
+  const wrookID = 'wrook1'
+  const brookID = 'brook1'
+  const wrookDest = {x: 5, y: 7}
+  const toBeCaptured = {id: brookID, _pos: wrookDest}
+
+  beforeEach(async () => {
+    update.mockClear()
+
+
+    // Mock newMatch
+    gameState = {
+      chesspieces1: [
+        {id: wrookID, _pos: {x: 4, y: 7}},
+      ],
+      chesspieces2: [
+        toBeCaptured
+      ],
+      graveyard: [],
+      moves: {
+        [wrookID]: [{pos: wrookDest, capture: toBeCaptured}]
+      },
+    }
+    const newMatchData = {
+      ...gameState,
+      color: 1
+    }
+    newMatch.mockResolvedValue(newMatchData)
+    game = new Game()
+    await game.init()
+
+
+    // Mock send_move_to_server
+    const movePieceData = {
+      success: true
+    }
+    send_move_to_server.mockResolvedValue(movePieceData)
+
+
+    // Mock getGameState
+    gameState2 = {
+      chesspieces1: [{id: wrookID, _pos: wrookDest}],
+      chesspieces2: [],
+      graveyard: [],
+      moves: "moves2",
+    }
+    getGameState.mockResolvedValue(gameState2)
+  })
+
+  test("Update graveyard immediately after moving piece", async () => {
+    const rook = gameState.chesspieces1[0]
+    await game.move_piece(rook.id, wrookDest.x, wrookDest.y)
+
+    const chesspiecesExpect = [
+      {id: wrookID, _pos: wrookDest},
+      {id: brookID, _pos: wrookDest}
+    ]
+
+    expect(update).nthCalledWith(2, chesspiecesExpect, [toBeCaptured])
+    //expect(update).nthCalledWith(4, waitForUpdateData.chesspieces1.concat(waitForUpdateData.chesspieces2), waitForUpdateData.graveyard)
+  })
+})
