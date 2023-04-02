@@ -5,7 +5,7 @@ const queueMatch = require("../utils/queueMatch.js");
 
 
 indexRouter.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../index.html'));
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
 indexRouter.post('/login', (req, res) => {
@@ -22,7 +22,7 @@ indexRouter.post('/login', (req, res) => {
 })
 
 indexRouter.get('/signup_form', (req, res) => {
-  res.sendFile(path.join(__dirname, '../signup.html'));
+  res.sendFile(path.join(__dirname, '../public/signup.html'));
 });
 
 indexRouter.post('/signup', (req, res) => {
@@ -32,7 +32,7 @@ indexRouter.post('/signup', (req, res) => {
 })
 
 indexRouter.get('/play', (req, res) => {
-  res.sendFile(path.join(__dirname, '../chess.html'));
+  res.sendFile(path.join(__dirname, '../public/chess.html'));
 });
 
 indexRouter.get('/new_match', (req, res) => {
