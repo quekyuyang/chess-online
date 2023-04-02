@@ -2,7 +2,7 @@ require('dotenv').config()
 
 var express = require('express');
 var session = require('express-session');
-const index = require('./index');
+const indexRouter = require('./indexRoutes');
 const {game_router} = require('./game_router')
 const UserDatabase = require('./UserDatabase')
 const DatabaseInterface = require("./DatabaseInterface.js");
@@ -24,6 +24,6 @@ app.set('user_database', userDatabase);
 const database_interface = new DatabaseInterface();
 app.set('database_interface', database_interface);
 
-app.use('/', index);
+app.use('/', indexRouter);
 app.use('/game', game_router);
 app.listen(3000);

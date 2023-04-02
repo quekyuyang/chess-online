@@ -1,14 +1,14 @@
 const express = require('express')
 var path = require('path');
-const index = express.Router();
+const indexRouter = express.Router();
 const queueMatch = require("./helper.js");
 
 
-index.get('/', (req, res) => {
+indexRouter.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-index.post('/login', (req, res) => {
+indexRouter.post('/login', (req, res) => {
   const userDatabase = req.app.get('user_database');
   userDatabase.authenticate(req.body.username, req.body.password)
   .then((success) => {
@@ -21,23 +21,23 @@ index.post('/login', (req, res) => {
   })
 })
 
-index.get('/signup_form', (req, res) => {
+indexRouter.get('/signup_form', (req, res) => {
   res.sendFile(path.join(__dirname, 'signup.html'));
 });
 
-index.post('/signup', (req, res) => {
+indexRouter.post('/signup', (req, res) => {
   const userDatabase = req.app.get('user_database');
   userDatabase.newUser(req.body.username, req.body.password);
   res.redirect('/');
 })
 
-index.get('/play', (req, res) => {
+indexRouter.get('/play', (req, res) => {
   res.sendFile(path.join(__dirname, 'chess.html'));
 });
 
-index.get('/new_match', (req, res) => {
+indexRouter.get('/new_match', (req, res) => {
   queueMatch(req, res, req.app.get('database_interface'));
 });
 
 
-module.exports = index;
+module.exports = indexRouter;
