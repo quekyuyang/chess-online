@@ -29,7 +29,7 @@ class UserDatabase {
         return this.users.findOne({username: username})
         .then(user => {
             if (!user)
-                return False
+                return false
 
             return bcrypt.compare(password, user.password)
         })
