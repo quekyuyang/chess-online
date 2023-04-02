@@ -4,8 +4,8 @@ var express = require('express');
 var session = require('express-session');
 const indexRouter = require('./routes/indexRoutes');
 const {game_router} = require('./routes/game_router')
-const UserDatabase = require('./UserDatabase')
-const DatabaseInterface = require("./DatabaseInterface.js");
+const UserDatabase = require('./utils/UserDatabase')
+const DatabaseInterface = require("./utils/DatabaseInterface.js");
 
 
 var app = express();

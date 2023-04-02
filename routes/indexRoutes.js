@@ -1,7 +1,7 @@
 const express = require('express')
 var path = require('path');
 const indexRouter = express.Router();
-const queueMatch = require("../queueMatch.js");
+const queueMatch = require("../utils/queueMatch.js");
 
 
 indexRouter.get('/', (req, res) => {

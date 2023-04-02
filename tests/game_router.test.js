@@ -1,6 +1,6 @@
 require('dotenv').config()
-const DatabaseInterface = require("../DatabaseInterface.js")
-jest.mock("../DatabaseInterface.js")
+const DatabaseInterface = require("../utils/DatabaseInterface.js")
+jest.mock("../utils/DatabaseInterface.js")
 
 const {game_router, update_opponent} = require("../routes/game_router");
 const request = require("supertest");
