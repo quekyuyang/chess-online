@@ -1,5 +1,5 @@
-const queueMatch = require("../helper.js")
-const {newGame} = require('../chess/Game')
+const queueMatch = require("../queueMatch.js")
+const {newGame} = require('../chess/Game.js')
 jest.mock('../chess/Game')
 
 newGame.mockReturnValue({
