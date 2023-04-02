@@ -1,6 +1,6 @@
 const express = require('express');
 const game_router = express.Router();
-const {execMoveInGame} = require('./chess/Game')
+const {execMoveInGame} = require('../chess/Game')
 
 
 game_router.all('*', (req, res, next) => {

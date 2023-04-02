@@ -2,7 +2,7 @@ require('dotenv').config()
 const DatabaseInterface = require("../DatabaseInterface.js")
 jest.mock("../DatabaseInterface.js")
 
-const {game_router, update_opponent} = require("../game_router");
+const {game_router, update_opponent} = require("../routes/game_router");
 const request = require("supertest");
 const express = require("express");
 var session = require('express-session');

@@ -2,8 +2,8 @@ require('dotenv').config()
 
 var express = require('express');
 var session = require('express-session');
-const indexRouter = require('./indexRoutes');
-const {game_router} = require('./game_router')
+const indexRouter = require('./routes/indexRoutes');
+const {game_router} = require('./routes/game_router')
 const UserDatabase = require('./UserDatabase')
 const DatabaseInterface = require("./DatabaseInterface.js");
 
